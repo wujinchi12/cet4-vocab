@@ -1,0 +1,64 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { getDueWords, updateProgress } from '../api'
+import FlashCard from '../components/FlashCard.vue'
+import ProgressBar from '../components/ProgressBar.vue'
+import SessionControls from '../components/SessionControls.vue'
+
+const words = ref([])
+const index = ref(0)
+const loading = ref(true)
+const finished = ref(false)
+
+async function loadWords() {
+  loading.value = true
+  const { data } = await getDueWords(20)
+  words.value = data
+  index.value = 0
+  finished.value = data.length === 0
+  loading.value = false
+}
+
+const currentWord = () => words.value[index.value] || null
+
+async function handleAnswer(knewIt) {
+  const w = currentWord()
+  if (!w) return
+  await updateProgress(w.word_id, knewIt)
+  if (index.value < words.value.length - 1) {
+    index.value++
+  } else {
+    finished.value = true
+  }
+}
+
+onMounted(loadWords)
+</script>
+
+<template>
+  <div>
+    <h2>闪卡复习</h2>
+
+    <div v-if="loading" class="loading">加载中...</div>
+
+    <div v-else-if="finished" class="finished card">
+      <h3>本轮复习完成!</h3>
+      <p>所有单词已过完一遍，请稍后再来复习。</p>
+      <button class="btn-primary" @click="loadWords">再来一轮</button>
+    </div>
+
+    <div v-else>
+      <ProgressBar :current="index + 1" :total="words.length" />
+      <FlashCard :word="currentWord()" />
+      <SessionControls @know="handleAnswer(true)" @dont-know="handleAnswer(false)" @end="finished = true" />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+h2 { margin-bottom: 8px; }
+.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+.finished { text-align: center; padding: 40px; }
+.finished h3 { margin-bottom: 8px; }
+.finished p { color: var(--text-secondary); margin-bottom: 20px; }
+</style>

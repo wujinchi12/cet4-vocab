@@ -1,0 +1,41 @@
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE || '/api',
+  headers: { 'Content-Type': 'application/json' },
+})
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+api.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export const register = (data) => api.post('/auth/register', data)
+export const login = (data) => api.post('/auth/login', data)
+export const getWords = (params) => api.get('/words', { params })
+export const getWord = (id) => api.get(`/words/${id}`)
+export const getProgressSummary = () => api.get('/progress')
+export const getDueWords = (limit = 20) => api.get('/progress/due', { params: { limit } })
+export const updateProgress = (wordId, knewIt) => api.put(`/progress/${wordId}`, { knew_it: knewIt })
+export const getWeakestWords = (limit = 20) => api.get('/progress/weakest', { params: { limit } })
+export const generateQuiz = (data) => api.post('/quiz/generate', data)
+export const submitQuiz = (data) => api.post('/quiz/submit', data)
+export const getQuizHistory = () => api.get('/quiz/history')
+
+export const getLeaderboard = (limit = 50) => api.get('/leaderboard', { params: { limit } })
+
+export default api
