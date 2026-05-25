@@ -8,7 +8,7 @@ from docx import Document
 from app.database import SessionLocal, engine, Base
 from app.models.word import Word
 
-DOCX_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "..", "四级词汇.docx")
+DOCX_PATH = os.path.join(os.path.dirname(__file__), "..", "四级词汇.docx")
 
 
 def parse_docx(path: str) -> list[dict]:

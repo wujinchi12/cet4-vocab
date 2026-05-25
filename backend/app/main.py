@@ -5,6 +5,10 @@ from app.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
 
+# Auto-seed words on first launch
+from scripts.seed_words import seed
+seed()
+
 app = FastAPI(title="CET-4 Vocabulary API")
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
