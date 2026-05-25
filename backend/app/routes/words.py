@@ -17,7 +17,7 @@ def list_words(
     query = db.query(Word)
     if search:
         query = query.filter(
-            Word.english.ilike(f"%{search}%") | Word.chinese.ilike(f"%{search}%")
+            Word.english.like(f"%{search}%") | Word.chinese.like(f"%{search}%")
         )
     total = query.count()
     items = query.order_by(Word.id).offset((page - 1) * size).limit(size).all()
