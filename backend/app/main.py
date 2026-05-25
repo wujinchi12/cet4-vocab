@@ -39,3 +39,16 @@ app.include_router(leaderboard.router)
 @app.get("/api/health")
 def health_check():
     return {"status": "ok"}
+
+import traceback
+@app.get("/api/debug")
+def debug():
+    from app.database import SessionLocal
+    from app.models.word import Word
+    try:
+        db = SessionLocal()
+        count = db.query(Word).count()
+        db.close()
+        return {"word_count": count}
+    except Exception as e:
+        return {"error": str(e), "trace": traceback.format_exc()}
