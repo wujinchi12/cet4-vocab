@@ -6,8 +6,14 @@ from app.database import engine, Base
 Base.metadata.create_all(bind=engine)
 
 # Auto-seed words on first launch
-from scripts.seed_words import seed
-seed()
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+try:
+    from scripts.seed_words import seed
+    seed()
+except Exception as e:
+    logger.error(f"Seed failed: {e}")
 
 app = FastAPI(title="CET-4 Vocabulary API")
 
