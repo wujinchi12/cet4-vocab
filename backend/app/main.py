@@ -1,6 +1,8 @@
 import os
-from fastapi import FastAPI
+import traceback
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
@@ -16,6 +18,19 @@ except Exception as e:
     logger.error(f"Seed failed: {e}")
 
 app = FastAPI(title="CET-4 Vocabulary API")
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": str(exc),
+            "type": type(exc).__name__,
+            "traceback": traceback.format_exc(),
+        },
+    )
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 
@@ -40,7 +55,6 @@ app.include_router(leaderboard.router)
 def health_check():
     return {"status": "ok"}
 
-import traceback
 @app.get("/api/debug")
 def debug():
     from app.database import SessionLocal
@@ -51,4 +65,4 @@ def debug():
         db.close()
         return {"word_count": count}
     except Exception as e:
-        return {"error": str(e), "trace": traceback.format_exc()}
+        return {"error": str(e)}
