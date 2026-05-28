@@ -1,28 +1,20 @@
 import os
-import traceback
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
-
-# Auto-seed words on first launch
-import logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-try:
-    from scripts.seed_words import seed
-    seed()
-except Exception as e:
-    logger.error(f"Seed failed: {e}")
 
 app = FastAPI(title="CET-4 Vocabulary API")
 
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Unhandled error: {exc}", exc_info=True)
+    import logging
+    import traceback
+    logging.getLogger(__name__).error(f"Unhandled error: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={
@@ -55,14 +47,8 @@ app.include_router(leaderboard.router)
 def health_check():
     return {"status": "ok"}
 
-@app.get("/api/debug")
-def debug():
-    from app.database import SessionLocal
-    from app.models.word import Word
-    try:
-        db = SessionLocal()
-        count = db.query(Word).count()
-        db.close()
-        return {"word_count": count}
-    except Exception as e:
-        return {"error": str(e)}
+
+# Serve frontend static files — must be after API routes
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if os.path.isdir(static_dir):
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")

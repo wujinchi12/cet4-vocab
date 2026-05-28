@@ -1,14 +1,16 @@
-"""Parse 四级词汇.docx and insert all words into the SQLite database."""
+"""Parse 四级词汇.docx and insert all words into the database. Idempotent — safe to run multiple times."""
 import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from docx import Document
+from sqlalchemy.exc import IntegrityError
 from app.database import SessionLocal, engine, Base
 from app.models.word import Word
 
 DOCX_PATH = os.path.join(os.path.dirname(__file__), "..", "四级词汇.docx")
+EXPECTED_COUNT = 4417
 
 
 def parse_docx(path: str) -> list[dict]:
@@ -32,17 +34,30 @@ def seed():
     db = SessionLocal()
 
     existing = db.query(Word).count()
-    if existing > 0:
-        print(f"Database already has {existing} words. Skipping seed.")
+
+    if existing == EXPECTED_COUNT:
+        print(f"Database has {existing} words. Skipping seed.")
         db.close()
         return
 
+    # Data is missing or duplicated — clean and reseed
+    if existing > 0:
+        print(f"Found {existing} word records (expected {EXPECTED_COUNT}), cleaning up...")
+        db.query(Word).delete()
+        db.commit()
+
     words = parse_docx(DOCX_PATH)
+    print(f"Seeding {len(words)} words...")
     for w in words:
         db.add(Word(english=w["english"], chinese=w["chinese"]))
 
-    db.commit()
-    print(f"Seeded {len(words)} words.")
+    try:
+        db.commit()
+        print(f"Seeded {len(words)} words successfully.")
+    except IntegrityError:
+        db.rollback()
+        print("Seed already completed by another process.")
+
     db.close()
 
 
