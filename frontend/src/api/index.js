@@ -38,4 +38,15 @@ export const getQuizHistory = () => api.get('/quiz/history')
 
 export const getLeaderboard = (limit = 50) => api.get('/leaderboard', { params: { limit } })
 
+// Admin
+const adminApi = (token) => axios.create({
+  baseURL: import.meta.env.VITE_API_BASE || '/api',
+  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+})
+
+export const getAdminUsers = (token) => adminApi(token).get('/admin/users')
+export const getAdminUser = (token, id) => adminApi(token).get(`/admin/users/${id}`)
+export const deleteAdminUser = (token, id) => adminApi(token).delete(`/admin/users/${id}`)
+export const resetUserPassword = (token, id) => adminApi(token).post(`/admin/users/${id}/reset-password`)
+
 export default api

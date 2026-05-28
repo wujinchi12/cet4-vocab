@@ -9,6 +9,7 @@ const routes = [
   { path: '/quiz', name: 'quiz', component: () => import('../views/QuizView.vue'), meta: { requiresAuth: true } },
   { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true } },
   { path: '/leaderboard', name: 'leaderboard', component: () => import('../views/LeaderboardView.vue'), meta: { requiresAuth: true } },
+  { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue') },
 ]
 
 const router = createRouter({
