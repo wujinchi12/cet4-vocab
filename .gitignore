@@ -12,7 +12,8 @@ dist-ssr/
 *.local
 
 # Built frontend
-backend/static/
+# Uncommented: pre-built frontend is committed for Railway deployment
+# backend/static/
 
 # IDE
 .vscode/*
