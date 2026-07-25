@@ -16,10 +16,7 @@ defineProps({ visible: Boolean })
           欢迎支持作者 <strong>吴瑾赤</strong> 继续创作。
         </p>
         <div class="qrcode-area">
-          <div class="qrcode-placeholder">
-            <span class="qr-icon">&#128179;</span>
-            <span class="qr-text">赞赏码</span>
-          </div>
+          <img src="/qrcode.jpg" alt="赞赏码" class="qrcode-img" />
         </div>
         <p class="thanks">每一份支持都是前进的动力 &#127775;</p>
         <button class="btn-primary close-action" @click="$emit('close')">关闭</button>
@@ -55,15 +52,10 @@ defineProps({ visible: Boolean })
 h2 { font-size: 1.4rem; margin-bottom: 12px; }
 .message { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
 .qrcode-area { margin-bottom: 16px; }
-.qrcode-placeholder {
-  width: 160px; height: 160px; margin: 0 auto;
-  border: 2px dashed var(--border); border-radius: 12px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 8px; color: var(--text-secondary);
+.qrcode-img {
+  width: 180px; height: 180px; object-fit: cover;
+  border-radius: 12px; border: 2px solid var(--border);
 }
-.qr-icon { font-size: 36px; opacity: 0.5; }
-.qr-text { font-size: 0.85rem; }
 .thanks { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; }
 .close-action { width: 100%; }
 </style>
