@@ -50,11 +50,10 @@ def health_check():
 
 
 # Serve frontend static files — must be after API routes
-# Prefer Nixpacks/Railway build output (frontend/dist), fall back to pre-built (static/)
-_base = os.path.dirname(__file__)
-nixpacks_dir = os.path.join(_base, "..", "..", "frontend", "dist")
-prebuilt_dir = os.path.join(_base, "..", "static")
-static_dir = nixpacks_dir if os.path.isdir(nixpacks_dir) else prebuilt_dir
+# Nixpacks build copies output to backend/static/; local dev uses pre-built files
+static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if not os.path.isdir(static_dir):
+    static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")
 if os.path.isdir(static_dir):
 
     @app.get("/{full_path:path}")

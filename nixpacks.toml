@@ -2,10 +2,7 @@
 nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = [
-  "cd frontend && npm ci && npm run build",
-  "cd backend && pip install -r requirements.txt",
-]
+cmds = ["cd frontend && rm -rf node_modules && npm install"]
 
-[start]
-cmd = "cd backend && python -m scripts.seed_words && gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT"
+[phases.build]
+cmds = ["cd frontend && npm run build && cp -r dist/* ../backend/static/"]
