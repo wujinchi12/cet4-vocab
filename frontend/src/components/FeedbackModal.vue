@@ -168,4 +168,10 @@ h2 { font-size: 1.25rem; margin-bottom: 16px; }
 .success-state h2 { margin-bottom: 8px; }
 .success-state p { color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; }
 .success-state button { padding: 10px 40px; }
+
+@media (max-width: 480px) {
+  .feedback-card { padding: 24px 18px 20px; }
+  h2 { font-size: 1.1rem; }
+  .type-btn { font-size: 0.8rem; padding: 8px; }
+}
 </style>

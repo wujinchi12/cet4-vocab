@@ -52,4 +52,16 @@ function handleLogout() {
 .logo { font-size: 18px; font-weight: 700; color: var(--primary); }
 .nav-links { display: flex; align-items: center; gap: 16px; }
 .nav-links a { font-size: 14px; }
+
+@media (max-width: 640px) {
+  .nav-inner { height: 48px; padding: 0 4px; }
+  .logo { font-size: 15px; }
+  .nav-links { gap: 8px; }
+  .nav-links a { font-size: 12px; }
+}
+@media (max-width: 400px) {
+  .nav-links { gap: 5px; }
+  .nav-links a { font-size: 11px; }
+  .btn-outline { padding: 6px 10px; font-size: 11px; }
+}
 </style>

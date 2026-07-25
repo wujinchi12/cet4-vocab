@@ -53,8 +53,13 @@ h2 { font-size: 1.4rem; margin-bottom: 12px; }
 .message { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
 .qrcode-area { margin-bottom: 16px; }
 .qrcode-img {
-  width: 180px; height: 180px; object-fit: cover;
-  border-radius: 12px; border: 2px solid var(--border);
+  width: 180px; height: 180px; max-width: 60vw; max-height: 60vw;
+  object-fit: contain; border-radius: 12px; border: 2px solid var(--border);
+}
+@media (max-width: 480px) {
+  .support-card { padding: 28px 20px 20px; }
+  .message { font-size: 0.85rem; }
+  .qrcode-img { width: 160px; height: 160px; max-width: 50vw; max-height: 50vw; }
 }
 .thanks { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; }
 .close-action { width: 100%; }

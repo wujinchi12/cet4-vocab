@@ -86,4 +86,10 @@ a:hover { text-decoration: underline; }
 
 @media (max-width: 640px) {
   main { padding: 16px 12px; }
+  input, select, button { font-size: 16px; }
+}
+
+@media (max-width: 480px) {
+  main { padding: 12px 10px; }
+  h2 { font-size: 1.25rem; }
 }

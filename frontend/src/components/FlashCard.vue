@@ -73,4 +73,10 @@ function flip() { flipped.value = !flipped.value }
 .word-text { font-size: 28px; font-weight: 700; }
 .word-text.chinese { font-size: 24px; }
 .hint { margin-top: 16px; font-size: 13px; color: var(--text-secondary); }
+
+@media (max-width: 480px) {
+  .flashcard { height: 200px; }
+  .word-text { font-size: 22px; }
+  .word-text.chinese { font-size: 20px; }
+}
 </style>

@@ -9,7 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons.svg', 'og-image.svg'],
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,jpg,gif,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,svg,png,jpg,gif,woff,woff2}'],
         runtimeCaching: [
           {
             urlPattern: /^https?:\/\/.*\/api\/words.*/,
