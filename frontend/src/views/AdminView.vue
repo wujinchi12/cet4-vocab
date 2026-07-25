@@ -17,15 +17,23 @@
       <header class="admin-header">
         <h2>管理后台</h2>
         <div class="header-actions">
-          <span class="user-count">{{ users.length }} 个用户</span>
-          <button class="btn-sm" @click="fetchUsers">刷新</button>
           <button class="btn-sm btn-danger-outline" @click="logout">退出</button>
         </div>
       </header>
 
+      <div class="tabs">
+        <button class="tab" :class="{ active: activeTab === 'users' }" @click="switchTab('users')">用户管理</button>
+        <button class="tab" :class="{ active: activeTab === 'feedback' }" @click="switchTab('feedback')">反馈列表</button>
+      </div>
+
       <div v-if="loading" class="loading">加载中...</div>
 
-      <div v-else class="table-card card">
+      <!-- Users tab -->
+      <div v-else-if="activeTab === 'users'" class="table-card card">
+        <div class="table-header">
+          <span class="user-count">{{ users.length }} 个用户</span>
+          <button class="btn-sm" @click="fetchUsers">刷新</button>
+        </div>
         <table class="user-table">
           <thead>
             <tr>
@@ -52,6 +60,37 @@
                 <button class="btn-sm" @click="resetPw(u)">重置密码</button>
                 <button class="btn-sm btn-danger" @click="deleteU(u)">删除</button>
               </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Feedback tab -->
+      <div v-else-if="activeTab === 'feedback'" class="table-card card">
+        <div class="table-header">
+          <span class="user-count">{{ feedbacks.length }} 条反馈</span>
+          <button class="btn-sm" @click="fetchFeedback">刷新</button>
+        </div>
+        <div v-if="feedbacks.length === 0" class="empty">暂无反馈</div>
+        <table v-else class="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>类型</th>
+              <th>内容</th>
+              <th>联系方式</th>
+              <th>时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="f in feedbacks" :key="f.id">
+              <td>{{ f.id }}</td>
+              <td>
+                <span class="type-badge" :class="f.type">{{ f.type === 'suggestion' ? '建议' : '问题' }}</span>
+              </td>
+              <td class="content-cell">{{ f.content }}</td>
+              <td>{{ f.contact || '-' }}</td>
+              <td>{{ formatDate(f.created_at) }}</td>
             </tr>
           </tbody>
         </table>
@@ -86,13 +125,15 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getAdminUsers, deleteAdminUser, resetUserPassword } from '../api'
+import { getAdminUsers, deleteAdminUser, resetUserPassword, getAdminFeedback } from '../api'
 
 const adminToken = ref(sessionStorage.getItem('admin_token') || '')
 const keyInput = ref('')
 const loginError = ref('')
 const users = ref([])
+const feedbacks = ref([])
 const loading = ref(false)
+const activeTab = ref('users')
 
 const resetModal = ref({ show: false, username: '', newPassword: '' })
 const deleteModal = ref({ show: false, id: null, username: '' })
@@ -123,6 +164,23 @@ async function fetchUsers() {
   } finally {
     loading.value = false
   }
+}
+
+async function fetchFeedback() {
+  loading.value = true
+  try {
+    const { data } = await getAdminFeedback(adminToken.value)
+    feedbacks.value = data.feedback
+  } finally {
+    loading.value = false
+  }
+}
+
+function switchTab(tab) {
+  activeTab.value = tab
+  loading.value = false
+  if (tab === 'users') fetchUsers()
+  else fetchFeedback()
 }
 
 async function deleteU(u) {
@@ -229,4 +287,28 @@ if (adminToken.value) fetchUsers()
 
 .error { color: var(--danger); margin-top: 12px; font-size: 0.9rem; }
 .loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+.empty { text-align: center; padding: 40px 20px; color: var(--text-secondary); }
+
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.tab {
+  padding: 8px 20px; border: 1px solid var(--border); border-radius: 8px;
+  background: transparent; color: var(--text-secondary); cursor: pointer;
+  font-size: 0.9rem; transition: all 0.15s;
+}
+.tab:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.tab.active { border-color: var(--primary); background: rgba(99,102,241,0.12); color: var(--primary-light); }
+
+.table-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+}
+
+.type-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 10px;
+  font-size: 0.8rem; font-weight: 500;
+}
+.type-badge.suggestion { background: rgba(99,102,241,0.15); color: var(--primary-light); }
+.type-badge.bug { background: rgba(248,113,113,0.15); color: #f87171; }
+
+.content-cell { max-width: 300px; white-space: normal; word-break: break-word; }
 </style>
