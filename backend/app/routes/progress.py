@@ -60,6 +60,24 @@ def get_due_words(
                 wrong_count=entry.wrong_count,
                 next_review_at=entry.next_review_at,
             ))
+
+    # Fallback: new user with no progress records — return random words
+    if not result:
+        import random
+        all_words = db.query(Word).all()
+        if all_words:
+            picked = random.sample(all_words, min(limit, len(all_words)))
+            for word in picked:
+                result.append(ProgressOut(
+                    word_id=word.id,
+                    english=word.english,
+                    chinese=word.chinese,
+                    status="new",
+                    correct_count=0,
+                    wrong_count=0,
+                    next_review_at=None,
+                ))
+
     return result
 
 

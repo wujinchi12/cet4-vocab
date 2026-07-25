@@ -83,32 +83,36 @@ def _generate_match_questions(selected: list[Word], direction: str) -> list[dict
     return [{"type": "match", "pairs": pairs}]
 
 
-def grade_answers(db: Session, quiz_type: str, answers: list[dict]) -> tuple[int, int, list[dict]]:
+def grade_answers(db: Session, quiz_type: str, direction: str, answers: list[dict]) -> tuple[int, int, list[dict]]:
     correct = 0
     wrong = 0
     results = []
+    word_ids = [ans.get("word_id") for ans in answers]
+    words_map = {w.id: w for w in db.query(Word).filter(Word.id.in_(word_ids)).all()}
 
     for ans in answers:
         word_id = ans.get("word_id")
         user_answer = ans.get("answer", "").strip()
-        word = db.query(Word).filter(Word.id == word_id).first()
+        word = words_map.get(word_id)
 
-        correct_answer = ""
-        if word:
-            if quiz_type == "choice":
-                # Find which question/word this answer belongs to and get expected answer
-                correct_answer = ans.get("correct_answer", "")
-            elif quiz_type == "fill":
-                correct_answer = ans.get("correct_answer", "")
-            else:
-                correct_answer = ans.get("correct_answer", "")
+        if not word:
+            results.append({
+                "word_id": word_id, "user_answer": user_answer,
+                "correct_answer": "", "is_correct": False,
+                "english": "", "chinese": "",
+            })
+            wrong += 1
+            continue
 
-        if quiz_type == "choice":
-            is_correct = user_answer == correct_answer
-        elif quiz_type == "fill":
+        if direction == "en_to_cn":
+            correct_answer = word.chinese
+        else:
+            correct_answer = word.english
+
+        if quiz_type == "fill":
             is_correct = user_answer.lower() == correct_answer.lower()
         else:
-            is_correct = False
+            is_correct = user_answer == correct_answer
 
         if is_correct:
             correct += 1
@@ -120,8 +124,8 @@ def grade_answers(db: Session, quiz_type: str, answers: list[dict]) -> tuple[int
             "user_answer": user_answer,
             "correct_answer": correct_answer,
             "is_correct": is_correct,
-            "english": word.english if word else "",
-            "chinese": word.chinese if word else "",
+            "english": word.english,
+            "chinese": word.chinese,
         })
 
     return correct, wrong, results

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { getDueWords, updateProgress } from '../api'
 import FlashCard from '../components/FlashCard.vue'
 import ProgressBar from '../components/ProgressBar.vue'
@@ -9,26 +9,39 @@ const words = ref([])
 const index = ref(0)
 const loading = ref(true)
 const finished = ref(false)
+const submitting = ref(false)
 
 async function loadWords() {
   loading.value = true
-  const { data } = await getDueWords(20)
-  words.value = data
-  index.value = 0
-  finished.value = data.length === 0
-  loading.value = false
+  try {
+    const { data } = await getDueWords(20)
+    words.value = data
+    index.value = 0
+    finished.value = data.length === 0
+  } catch (e) {
+    console.error('Failed to load words:', e)
+  } finally {
+    loading.value = false
+  }
 }
 
-const currentWord = () => words.value[index.value] || null
+const currentWord = computed(() => words.value[index.value] || null)
 
 async function handleAnswer(knewIt) {
-  const w = currentWord()
-  if (!w) return
-  await updateProgress(w.word_id, knewIt)
-  if (index.value < words.value.length - 1) {
-    index.value++
-  } else {
-    finished.value = true
+  const w = currentWord.value
+  if (!w || submitting.value) return
+  submitting.value = true
+  try {
+    await updateProgress(w.word_id, knewIt)
+    if (index.value < words.value.length - 1) {
+      index.value++
+    } else {
+      finished.value = true
+    }
+  } catch (e) {
+    console.error('Failed to update progress:', e)
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -49,8 +62,12 @@ onMounted(loadWords)
 
     <div v-else>
       <ProgressBar :current="index + 1" :total="words.length" />
-      <FlashCard :word="currentWord()" />
-      <SessionControls @know="handleAnswer(true)" @dont-know="handleAnswer(false)" @end="finished = true" />
+      <FlashCard :word="currentWord" :key="currentWord?.word_id ?? 0" />
+      <SessionControls
+        @know="handleAnswer(true)"
+        @dont-know="handleAnswer(false)"
+        @end="finished = true"
+      />
     </div>
   </div>
 </template>

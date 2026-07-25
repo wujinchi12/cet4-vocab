@@ -19,7 +19,7 @@ export const useQuizStore = defineStore('quiz', {
       this.inProgress = true
     },
     async finishQuiz(answers) {
-      const { data } = await submitQuiz({ quiz_type: this.quizType, answers })
+      const { data } = await submitQuiz({ quiz_type: this.quizType, direction: this.direction, answers })
       this.results = data
       this.inProgress = false
       return data

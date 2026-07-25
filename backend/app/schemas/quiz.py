@@ -10,11 +10,11 @@ class QuizGenerateRequest(BaseModel):
 class QuizAnswer(BaseModel):
     word_id: int
     answer: str
-    correct_answer: str | None = None
 
 
 class QuizSubmitRequest(BaseModel):
     quiz_type: str
+    direction: str = "en_to_cn"
     answers: list[QuizAnswer]
 
 

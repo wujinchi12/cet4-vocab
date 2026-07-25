@@ -40,10 +40,9 @@ def submit_quiz(
         answers_for_grading.append({
             "word_id": ans.word_id,
             "answer": ans.answer,
-            "correct_answer": ans.correct_answer or "",
         })
 
-    correct, wrong, results = grade_answers(db, body.quiz_type, answers_for_grading)
+    correct, wrong, results = grade_answers(db, body.quiz_type, body.direction, answers_for_grading)
     score = (correct / (correct + wrong) * 100) if (correct + wrong) > 0 else 0
 
     history = QuizHistory(

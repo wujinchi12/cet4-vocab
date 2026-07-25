@@ -38,6 +38,8 @@ function handleLogout() {
   background: var(--card-bg);
   border-bottom: 1px solid var(--border);
   padding: 0 16px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .nav-inner {
   max-width: 960px;

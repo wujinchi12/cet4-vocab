@@ -154,10 +154,11 @@ if (adminToken.value) fetchUsers()
 .admin-login h2 { margin-bottom: 20px; font-size: 1.5rem; }
 .admin-login input {
   width: 100%; padding: 10px 14px; margin-bottom: 12px;
-  border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 1rem;
+  background: rgba(255,255,255,0.06); color: var(--text);
 }
 .admin-login button {
-  width: 100%; padding: 10px; background: #1a1a2e; color: #fff;
+  width: 100%; padding: 10px; background: var(--primary); color: #fff;
   border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;
 }
 
@@ -170,46 +171,46 @@ if (adminToken.value) fetchUsers()
 
 .user-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .user-table th, .user-table td {
-  padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb;
+  padding: 10px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.user-table th { background: #f9fafb; font-weight: 600; white-space: nowrap; }
-.user-table tbody tr:hover { background: #f3f4f6; }
+.user-table th { background: rgba(255,255,255,0.04); font-weight: 600; white-space: nowrap; }
+.user-table tbody tr:hover { background: rgba(255,255,255,0.04); }
 
 .actions { display: flex; gap: 6px; }
 
 .btn-sm {
-  padding: 4px 10px; font-size: 0.8rem; border: 1px solid #d1d5db;
-  border-radius: 6px; cursor: pointer; background: #fff;
+  padding: 4px 10px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.06); color: var(--text);
 }
-.btn-sm:hover { background: #f3f4f6; }
-.btn-danger { color: #dc2626; border-color: #fca5a5; }
-.btn-danger:hover { background: #fef2f2; }
+.btn-sm:hover { background: rgba(255,255,255,0.1); }
+.btn-danger { color: #f87171; border-color: rgba(248,113,113,0.3); }
+.btn-danger:hover { background: rgba(248,113,113,0.12); }
 
 .btn-refresh, .btn-logout {
-  padding: 6px 14px; border: 1px solid #d1d5db; border-radius: 6px;
-  cursor: pointer; background: #fff; font-size: 0.85rem;
+  padding: 6px 14px; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px;
+  cursor: pointer; background: rgba(255,255,255,0.06); font-size: 0.85rem; color: var(--text);
 }
 
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
   display: flex; align-items: center; justify-content: center; z-index: 100;
 }
 .modal {
-  background: #fff; padding: 28px; border-radius: 12px; max-width: 420px;
-  width: 90%; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  background: #1a1a2e; padding: 28px; border-radius: 12px; max-width: 420px;
+  width: 90%; box-shadow: 0 8px 30px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08);
 }
 .modal h3 { margin-bottom: 12px; }
-.modal code { background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 1rem; }
-.modal .hint { color: #6b7280; font-size: 0.85rem; margin-top: 8px; }
+.modal code { background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 4px; font-size: 1rem; }
+.modal .hint { color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px; }
 .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 .modal button {
-  padding: 8px 18px; border: 1px solid #d1d5db; border-radius: 6px;
-  background: #fff; cursor: pointer; font-size: 0.9rem;
+  padding: 8px 18px; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px;
+  background: rgba(255,255,255,0.06); cursor: pointer; font-size: 0.9rem; color: var(--text);
 }
 .modal .btn-danger { background: #dc2626; color: #fff; border-color: #dc2626; }
 .modal .btn-danger:hover { background: #b91c1c; }
 
-.error { color: #dc2626; margin-top: 10px; font-size: 0.9rem; }
-.loading { text-align: center; padding: 40px; color: #6b7280; }
-.user-count { color: #6b7280; font-size: 0.9rem; }
+.error { color: var(--danger); margin-top: 10px; font-size: 0.9rem; }
+.loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+.user-count { color: var(--text-secondary); font-size: 0.9rem; }
 </style>

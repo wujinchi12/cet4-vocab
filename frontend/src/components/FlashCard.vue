@@ -1,8 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-defineProps({ word: Object })
+const props = defineProps({ word: Object })
 const flipped = ref(false)
+
+// Reset flip state when the word changes
+watch(() => props.word?.word_id, () => { flipped.value = false })
 
 function flip() { flipped.value = !flipped.value }
 </script>
@@ -50,8 +53,8 @@ function flip() { flipped.value = !flipped.value }
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--card-bg);
+  backdrop-filter: blur(12px);
   backface-visibility: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 .card-back { transform: rotateY(180deg); }
 .word-text { font-size: 28px; font-weight: 700; }

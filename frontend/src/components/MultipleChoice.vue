@@ -10,7 +10,7 @@ function choose(option) {
   if (selected.value) return
   selected.value = option
   setTimeout(() => {
-    emit('answer', { word_id: props.question.word_id, answer: option, correct_answer: '' })
+    emit('answer', { word_id: props.question.word_id, answer: option })
     selected.value = null
   }, 300)
 }
@@ -50,6 +50,6 @@ function optionClass(opt) {
   text-align: center;
 }
 .option-btn:hover { border-color: var(--primary); }
-.option-btn.selected { border-color: var(--primary); background: #eef2ff; }
+.option-btn.selected { border-color: var(--primary); background: rgba(99,102,241,0.2); }
 @media (max-width: 480px) { .options-grid { grid-template-columns: 1fr; } }
 </style>

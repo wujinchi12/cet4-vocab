@@ -20,7 +20,7 @@ defineProps({
   border-bottom: 1px solid var(--border);
   transition: background 0.1s;
 }
-.word-card:hover { background: #f1f5f9; }
+.word-card:hover { background: rgba(255,255,255,0.06); }
 .english { font-weight: 600; font-size: 16px; color: var(--primary); }
 .chinese { font-size: 15px; color: var(--text-secondary); }
 </style>

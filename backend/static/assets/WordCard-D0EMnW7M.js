@@ -1,0 +1,1 @@
+import{_ as t,u as a,e as c,a as s,A as o}from"./index-B_n9HzL4.js";const r={class:"word-card"},d={class:"english"},n={class:"chinese"},i={__name:"WordCard",props:{word:{type:Object,required:!0}},setup(e){return(_,l)=>(a(),c("div",r,[s("div",d,o(e.word.english),1),s("div",n,o(e.word.chinese),1)]))}},p=t(i,[["__scopeId","data-v-3bbc7a02"]]);export{p as W};

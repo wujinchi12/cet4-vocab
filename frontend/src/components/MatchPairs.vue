@@ -20,7 +20,6 @@ function selectRight(item) {
     const answers = pairs.value.map(p => ({
       word_id: p.word_id,
       answer: matches.value[p.left] || '',
-      correct_answer: p.right,
     }))
     emit('answer', answers)
   }
@@ -75,7 +74,7 @@ const unmatchedRights = computed(() =>
   text-align: center;
 }
 .match-item:hover { border-color: var(--primary); }
-.match-item.selected { border-color: var(--primary); background: #eef2ff; }
-.match-item.matched { border-color: var(--success); background: #f0fdf4; opacity: 0.7; cursor: default; }
+.match-item.selected { border-color: var(--primary); background: rgba(99,102,241,0.2); }
+.match-item.matched { border-color: var(--success); background: rgba(52,211,153,0.15); opacity: 0.7; cursor: default; }
 .match-item.right { color: var(--text-secondary); }
 </style>

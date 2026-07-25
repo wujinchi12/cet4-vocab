@@ -1,1 +1,0 @@
-import{_ as t,u as r,e as a,a as s,A as o}from"./index-DCUfHNo-.js";const c={class:"word-card"},d={class:"english"},n={class:"chinese"},i={__name:"WordCard",props:{word:{type:Object,required:!0}},setup(e){return(_,l)=>(r(),a("div",c,[s("div",d,o(e.word.english),1),s("div",n,o(e.word.chinese),1)]))}},p=t(i,[["__scopeId","data-v-de5637be"]]);export{p as W};

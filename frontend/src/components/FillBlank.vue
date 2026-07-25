@@ -8,7 +8,7 @@ const answer = ref('')
 
 function submit() {
   if (!answer.value.trim()) return
-  emit('answer', { word_id: props.question.word_id, answer: answer.value.trim(), correct_answer: '' })
+  emit('answer', { word_id: props.question.word_id, answer: answer.value.trim() })
   answer.value = ''
 }
 </script>

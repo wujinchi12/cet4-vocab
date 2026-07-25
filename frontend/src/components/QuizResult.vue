@@ -60,8 +60,8 @@ h2 { margin-bottom: 16px; }
   display: flex; align-items: center; gap: 12px;
   padding: 10px 14px; border-radius: 6px; margin-bottom: 6px; font-size: 14px;
 }
-.answer-row.correct { background: #f0fdf4; }
-.answer-row.wrong { background: #fef2f2; }
+.answer-row.correct { background: rgba(52,211,153,0.12); }
+.answer-row.wrong { background: rgba(248,113,113,0.12); }
 .word { font-weight: 600; min-width: 100px; }
 .your-answer { color: var(--text-secondary); }
 .correct-answer { color: var(--success); font-weight: 500; }

@@ -50,7 +50,10 @@ def health_check():
 
 
 # Serve frontend static files — must be after API routes
+# Check both locations: pre-built (static/) and Nixpacks build (../frontend/dist)
 static_dir = os.path.join(os.path.dirname(__file__), "..", "static")
+if not os.path.isdir(static_dir):
+    static_dir = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "dist")
 if os.path.isdir(static_dir):
 
     @app.get("/{full_path:path}")
