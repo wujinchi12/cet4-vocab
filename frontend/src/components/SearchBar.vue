@@ -24,5 +24,13 @@ watch(query, (val) => {
   width: 100%;
   padding: 12px 16px;
   font-size: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
 }
+.search-input::placeholder { color: var(--text-secondary); }
+.search-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.06); }
 </style>

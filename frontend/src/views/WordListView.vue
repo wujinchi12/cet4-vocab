@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { getWords } from '../api'
 import SearchBar from '../components/SearchBar.vue'
 import WordCard from '../components/WordCard.vue'
@@ -10,6 +10,8 @@ const page = ref(1)
 const size = 25
 const search = ref('')
 const loading = ref(false)
+
+const totalPages = computed(() => Math.ceil(total.value / size))
 
 async function loadWords() {
   loading.value = true
@@ -28,42 +30,84 @@ function onSearch(val) {
   loadWords()
 }
 
-function nextPage() {
-  if (page.value * size < total.value) {
-    page.value++
-    loadWords()
-  }
-}
-
-function prevPage() {
-  if (page.value > 1) {
-    page.value--
-    loadWords()
-  }
+function goPage(p) {
+  page.value = p
+  loadWords()
 }
 
 onMounted(loadWords)
 </script>
 
 <template>
-  <div>
-    <h2>词汇表</h2>
-    <SearchBar @search="onSearch" style="margin: 16px 0" />
-    <div class="card word-list">
-      <WordCard v-for="w in words" :key="w.id" :word="w" />
-      <div v-if="loading" class="loading">加载中...</div>
+  <div class="word-list-page">
+    <header class="page-header">
+      <h2>词汇表</h2>
+      <span class="word-count" v-if="total > 0">共 {{ total }} 个单词</span>
+    </header>
+
+    <div class="search-card card">
+      <SearchBar @search="onSearch" />
     </div>
-    <div class="pagination" v-if="total > size">
-      <button class="btn-outline" @click="prevPage" :disabled="page <= 1">上一页</button>
-      <span>{{ page }} / {{ Math.ceil(total / size) }}</span>
-      <button class="btn-outline" @click="nextPage" :disabled="page * size >= total">下一页</button>
+
+    <div class="word-list card">
+      <template v-if="loading">
+        <div class="loading">加载中...</div>
+      </template>
+      <template v-else-if="words.length === 0">
+        <div class="empty">没有找到匹配的单词</div>
+      </template>
+      <template v-else>
+        <WordCard v-for="w in words" :key="w.id" :word="w" />
+      </template>
+    </div>
+
+    <div class="pagination" v-if="totalPages > 1">
+      <button class="btn-outline" :disabled="page <= 1" @click="goPage(1)">首页</button>
+      <button class="btn-outline" :disabled="page <= 1" @click="goPage(page - 1)">上一页</button>
+      <span class="page-info">{{ page }} / {{ totalPages }}</span>
+      <button class="btn-outline" :disabled="page >= totalPages" @click="goPage(page + 1)">下一页</button>
+      <button class="btn-outline" :disabled="page >= totalPages" @click="goPage(totalPages)">末页</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-h2 { margin-bottom: 8px; }
-.word-list { padding: 0; overflow: hidden; }
-.loading { text-align: center; padding: 20px; color: var(--text-secondary); }
-.pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+.page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.page-header h2 { font-size: 1.5rem; }
+.word-count { font-size: 0.9rem; color: var(--text-secondary); }
+
+.search-card {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+}
+
+.word-list {
+  padding: 0;
+  overflow: hidden;
+}
+.loading, .empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.page-info {
+  padding: 0 12px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  min-width: 60px;
+  text-align: center;
+}
 </style>
