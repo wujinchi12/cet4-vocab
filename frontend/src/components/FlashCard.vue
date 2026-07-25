@@ -1,10 +1,11 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useSpeech } from '../composables/useSpeech'
 
 const props = defineProps({ word: Object })
 const flipped = ref(false)
+const { speak, speaking } = useSpeech()
 
-// Reset flip state when the word changes
 watch(() => props.word?.word_id, () => { flipped.value = false })
 
 function flip() { flipped.value = !flipped.value }
@@ -14,10 +15,22 @@ function flip() { flipped.value = !flipped.value }
   <div class="flashcard" :class="{ flipped }" @click="flip">
     <div class="card-inner">
       <div class="card-front">
+        <button
+          class="speak-btn"
+          :class="{ playing: speaking }"
+          @click.stop="speak(word?.english)"
+          title="发音"
+        >&#9654;</button>
         <span class="word-text">{{ word?.english }}</span>
         <span class="hint">点击翻转</span>
       </div>
       <div class="card-back">
+        <button
+          class="speak-btn"
+          :class="{ playing: speaking }"
+          @click.stop="speak(word?.english)"
+          title="发音"
+        >&#9654;</button>
         <span class="word-text chinese">{{ word?.chinese }}</span>
         <span class="hint">{{ word?.english }}</span>
       </div>

@@ -7,6 +7,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.user_progress import UserProgress
 from app.models.quiz_history import QuizHistory
+from app.models.feedback import Feedback
 from app.auth import hash_password
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -111,3 +112,22 @@ def reset_password(user_id: int, db: Session = Depends(get_db), _=Depends(requir
     u.password_hash = hash_password(new_password)
     db.commit()
     return {"detail": "Password reset", "username": u.username, "new_password": new_password}
+
+
+@router.get("/feedback")
+def list_feedback(db: Session = Depends(get_db), _=Depends(require_admin)):
+    items = db.query(Feedback).order_by(Feedback.created_at.desc()).all()
+    return {
+        "feedback": [
+            {
+                "id": f.id,
+                "user_id": f.user_id,
+                "type": f.type,
+                "content": f.content,
+                "contact": f.contact,
+                "created_at": f.created_at.isoformat() if f.created_at else None,
+            }
+            for f in items
+        ],
+        "total": len(items),
+    }

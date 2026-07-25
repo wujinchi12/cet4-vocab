@@ -22,6 +22,7 @@ function start() {
         <option value="choice">选择题</option>
         <option value="fill">填空题</option>
         <option value="match">配对题</option>
+        <option value="listening">听音辨义</option>
       </select>
     </div>
 

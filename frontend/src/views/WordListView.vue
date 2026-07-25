@@ -57,7 +57,7 @@ onMounted(loadWords)
         <div class="empty">没有找到匹配的单词</div>
       </template>
       <template v-else>
-        <WordCard v-for="w in words" :key="w.id" :word="w" />
+        <WordCard v-for="w in words" :key="w.id" :word="w" :show-speak="true" />
       </template>
     </div>
 

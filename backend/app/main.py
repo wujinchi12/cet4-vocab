@@ -34,7 +34,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routes import auth, words, progress, quiz, leaderboard, admin
+from app.routes import auth, words, progress, quiz, leaderboard, admin, feedback
 
 app.include_router(auth.router)
 app.include_router(words.router)
@@ -42,6 +42,7 @@ app.include_router(progress.router)
 app.include_router(quiz.router)
 app.include_router(leaderboard.router)
 app.include_router(admin.router)
+app.include_router(feedback.router)
 
 
 @app.get("/api/health")
