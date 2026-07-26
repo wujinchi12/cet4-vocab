@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { getProgressSummary, getQuizHistory, getWeakestWords } from '../api'
 import { useAuthStore } from '../stores/auth'
 import StatsOverview from '../components/StatsOverview.vue'
@@ -11,6 +11,13 @@ const stats = ref(null)
 const history = ref(null)
 const weakest = ref(null)
 const error = ref('')
+
+const quizTotal = computed(() => history.value?.length || 0)
+const quizAvg = computed(() => {
+  if (!history.value?.length) return 0
+  const sum = history.value.reduce((s, q) => s + q.score_percent, 0)
+  return Math.round(sum / history.value.length)
+})
 
 onMounted(async () => {
   try {
@@ -40,7 +47,7 @@ onMounted(async () => {
     <div v-if="error" class="error-msg">{{ error }}</div>
 
     <template v-else>
-      <StatsOverview :stats="stats || {}" style="margin: 20px 0" />
+      <StatsOverview :stats="stats || {}" :quiz-total="quizTotal" :quiz-avg="quizAvg" style="margin: 20px 0" />
 
       <div v-if="history">
         <HistoryChart :history="history" style="margin: 20px 0" />
