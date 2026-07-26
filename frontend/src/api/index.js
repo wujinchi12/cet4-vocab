@@ -38,6 +38,11 @@ export const generateQuiz = (data) => api.post('/quiz/generate', data)
 export const submitQuiz = (data) => api.post('/quiz/submit', data)
 export const getQuizHistory = () => api.get('/quiz/history')
 
+export const addWrongAnswers = (data) => api.post('/wrong-answers/add', data)
+export const getWrongAnswers = (params) => api.get('/wrong-answers', { params })
+export const removeWrongAnswer = (wordId) => api.delete(`/wrong-answers/${wordId}`)
+export const clearWrongAnswers = () => api.post('/wrong-answers/clear')
+
 export const submitFeedback = (data) => api.post('/feedback', data)
 export const getLeaderboard = (limit = 50) => api.get('/leaderboard', { params: { limit } })
 

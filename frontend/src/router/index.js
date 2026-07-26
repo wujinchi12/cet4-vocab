@@ -8,6 +8,7 @@ const routes = [
   { path: '/flashcard', name: 'flashcard', component: () => import('../views/FlashcardView.vue'), meta: { requiresAuth: true } },
   { path: '/quiz', name: 'quiz', component: () => import('../views/QuizView.vue'), meta: { requiresAuth: true } },
   { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true } },
+  { path: '/wrong-answers', name: 'wrong-answers', component: () => import('../views/WrongAnswerBookView.vue'), meta: { requiresAuth: true } },
   { path: '/leaderboard', name: 'leaderboard', component: () => import('../views/LeaderboardView.vue'), meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue') },
 ]

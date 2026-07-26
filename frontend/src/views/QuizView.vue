@@ -96,6 +96,7 @@ function newQuiz() {
     <QuizResult
       v-else-if="step === 'result'"
       :result="store.results"
+      :quiz-type="config.type"
       :quiz-type-name="config.type === 'choice' ? '选择题' : config.type === 'fill' ? '填空题' : config.type === 'match' ? '配对题' : '听音辨义'"
       @retry="retry"
       @new-quiz="newQuiz"

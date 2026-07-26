@@ -1,11 +1,38 @@
 <script setup>
+import { ref, computed } from 'vue'
+import { addWrongAnswers } from '../api'
 import ShareCard from './ShareCard.vue'
 
-defineProps({
+const props = defineProps({
   result: Object,
+  quizType: { type: String, default: '' },
   quizTypeName: { type: String, default: '' },
 })
 defineEmits(['retry', 'newQuiz'])
+
+const addedToBook = ref(false)
+const adding = ref(false)
+
+const wrongWords = computed(() =>
+  props.result.results.filter(r => !r.is_correct)
+)
+
+async function addToBook() {
+  if (wrongWords.value.length === 0) return
+  adding.value = true
+  try {
+    const words = wrongWords.value.map(r => ({
+      word_id: r.word_id,
+      user_answer: r.user_answer,
+      correct_answer: r.correct_answer,
+      quiz_type: props.quizType,
+    }))
+    await addWrongAnswers({ words })
+    addedToBook.value = true
+  } finally {
+    adding.value = false
+  }
+}
 </script>
 
 <template>
@@ -19,8 +46,17 @@ defineEmits(['retry', 'newQuiz'])
       <span>错误: {{ result.wrong_count }}</span>
     </div>
 
-    <div class="answers-review">
-      <h3>答案回顾</h3>
+    <div class="answers-review" v-if="wrongWords.length > 0">
+      <div class="review-header">
+        <h3>答案回顾</h3>
+        <button
+          class="btn-add-book"
+          :disabled="addedToBook || adding"
+          @click="addToBook"
+        >
+          {{ addedToBook ? '已加入错题本' : adding ? '添加中...' : '加入错题本' }}
+        </button>
+      </div>
       <div
         v-for="r in result.results"
         :key="r.word_id"
@@ -32,6 +68,10 @@ defineEmits(['retry', 'newQuiz'])
         <span class="correct-answer" v-if="!r.is_correct">{{ r.correct_answer }}</span>
         <span class="icon">{{ r.is_correct ? '✓' : '✗' }}</span>
       </div>
+    </div>
+
+    <div class="answers-review" v-else>
+      <h3>全部正确!</h3>
     </div>
 
     <div class="result-actions">
@@ -56,6 +96,15 @@ h2 { margin-bottom: 16px; }
 .stats { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; color: var(--text-secondary); }
 .answers-review { text-align: left; margin: 20px 0; }
 .answers-review h3 { margin-bottom: 12px; }
+.review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.review-header h3 { margin: 0; }
+.btn-add-book {
+  padding: 6px 14px; font-size: 13px; border-radius: 6px;
+  background: var(--primary); color: white; border: none; cursor: pointer;
+  white-space: nowrap; transition: opacity 0.2s;
+}
+.btn-add-book:disabled { opacity: 0.6; cursor: default; }
+.btn-add-book:not(:disabled):hover { opacity: 0.85; }
 .answer-row {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 14px; border-radius: 6px; margin-bottom: 6px; font-size: 14px;
