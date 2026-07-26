@@ -1,6 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { addWrongAnswers } from '../api'
+import { computed } from 'vue'
 import ShareCard from './ShareCard.vue'
 
 const props = defineProps({
@@ -10,29 +9,9 @@ const props = defineProps({
 })
 defineEmits(['retry', 'newQuiz'])
 
-const addedToBook = ref(false)
-const adding = ref(false)
-
 const wrongWords = computed(() =>
   props.result.results.filter(r => !r.is_correct)
 )
-
-async function addToBook() {
-  if (wrongWords.value.length === 0) return
-  adding.value = true
-  try {
-    const words = wrongWords.value.map(r => ({
-      word_id: r.word_id,
-      user_answer: r.user_answer,
-      correct_answer: r.correct_answer,
-      quiz_type: props.quizType,
-    }))
-    await addWrongAnswers({ words })
-    addedToBook.value = true
-  } finally {
-    adding.value = false
-  }
-}
 </script>
 
 <template>
@@ -49,13 +28,7 @@ async function addToBook() {
     <div class="answers-review" v-if="wrongWords.length > 0">
       <div class="review-header">
         <h3>答案回顾</h3>
-        <button
-          class="btn-add-book"
-          :disabled="addedToBook || adding"
-          @click="addToBook"
-        >
-          {{ addedToBook ? '已加入错题本' : adding ? '添加中...' : '加入错题本' }}
-        </button>
+        <span class="auto-added-tag">已自动加入错题本</span>
       </div>
       <div
         v-for="r in result.results"
@@ -98,13 +71,10 @@ h2 { margin-bottom: 16px; }
 .answers-review h3 { margin-bottom: 12px; }
 .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .review-header h3 { margin: 0; }
-.btn-add-book {
-  padding: 6px 14px; font-size: 13px; border-radius: 6px;
-  background: var(--primary); color: white; border: none; cursor: pointer;
-  white-space: nowrap; transition: opacity 0.2s;
+.auto-added-tag {
+  font-size: 12px; color: var(--success); background: rgba(52,211,153,0.12);
+  padding: 4px 10px; border-radius: 12px; white-space: nowrap;
 }
-.btn-add-book:disabled { opacity: 0.6; cursor: default; }
-.btn-add-book:not(:disabled):hover { opacity: 0.85; }
 .answer-row {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 14px; border-radius: 6px; margin-bottom: 6px; font-size: 14px;

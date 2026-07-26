@@ -86,7 +86,7 @@ onMounted(fetchData)
 
     <div v-else-if="items.length === 0" class="empty card">
       <p>还没有错题记录</p>
-      <p class="hint">做测验时答错的题目可以加入错题本，方便复习</p>
+      <p class="hint">完成测验后，答错的题目会自动加入错题本</p>
     </div>
 
     <div v-else class="wrong-list">

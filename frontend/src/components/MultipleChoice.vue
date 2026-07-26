@@ -44,12 +44,18 @@ function optionClass(opt) {
 .option-btn {
   padding: 16px;
   font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
   background: var(--card-bg);
   border: 2px solid var(--border);
   border-radius: var(--radius);
   text-align: center;
+  transition: all 0.2s;
 }
-.option-btn:hover { border-color: var(--primary); }
-.option-btn.selected { border-color: var(--primary); background: rgba(99,102,241,0.2); }
+.option-btn:nth-child(4n+1):hover { border-color: #f87171; background: rgba(248,113,113,0.15); box-shadow: 0 0 16px rgba(248,113,113,0.2); }
+.option-btn:nth-child(4n+2):hover { border-color: #60a5fa; background: rgba(96,165,250,0.15); box-shadow: 0 0 16px rgba(96,165,250,0.2); }
+.option-btn:nth-child(4n+3):hover { border-color: #34d399; background: rgba(52,211,153,0.15); box-shadow: 0 0 16px rgba(52,211,153,0.2); }
+.option-btn:nth-child(4n+0):hover { border-color: #fbbf24; background: rgba(251,191,36,0.15); box-shadow: 0 0 16px rgba(251,191,36,0.2); }
+.option-btn.selected { border-color: var(--primary); background: rgba(99,102,241,0.25); box-shadow: 0 0 18px rgba(99,102,241,0.3); }
 @media (max-width: 480px) { .options-grid { grid-template-columns: 1fr; } }
 </style>

@@ -7,44 +7,64 @@ import HistoryChart from '../components/HistoryChart.vue'
 import WordCard from '../components/WordCard.vue'
 
 const auth = useAuthStore()
-const stats = ref({})
-const history = ref([])
-const weakest = ref([])
+const stats = ref(null)
+const history = ref(null)
+const weakest = ref(null)
+const error = ref('')
 
 onMounted(async () => {
-  const [s, h, w] = await Promise.all([
-    getProgressSummary(),
-    getQuizHistory(),
-    getWeakestWords(10),
-  ])
-  stats.value = s.data
-  history.value = h.data
-  weakest.value = w.data.map(item => ({
-    id: item.word_id,
-    english: item.english,
-    chinese: item.chinese
-  }))
+  try {
+    const [s, h, w] = await Promise.all([
+      getProgressSummary(),
+      getQuizHistory(),
+      getWeakestWords(10),
+    ])
+    stats.value = s.data
+    history.value = h.data
+    weakest.value = w.data.map(item => ({
+      id: item.word_id,
+      english: item.english,
+      chinese: item.chinese
+    }))
+  } catch (e) {
+    error.value = '加载失败，请刷新重试'
+  }
 })
 </script>
 
 <template>
-  <div>
+  <div class="profile-page">
     <h2>我的学习进度</h2>
-    <p class="username">用户: {{ auth.user?.username }}</p>
+    <p class="username" v-if="auth.user?.username">用户: {{ auth.user.username }}</p>
 
-    <StatsOverview :stats="stats" style="margin: 20px 0" />
-    <HistoryChart :history="history" style="margin: 20px 0" />
+    <div v-if="error" class="error-msg">{{ error }}</div>
 
-    <div class="card weakest-section" v-if="weakest.length > 0">
-      <h3>薄弱词汇</h3>
-      <WordCard v-for="w in weakest" :key="w.id" :word="w" />
-    </div>
+    <template v-else>
+      <StatsOverview :stats="stats || {}" style="margin: 20px 0" />
+
+      <div v-if="history">
+        <HistoryChart :history="history" style="margin: 20px 0" />
+      </div>
+
+      <div class="card weakest-section" v-if="weakest && weakest.length > 0">
+        <h3>薄弱词汇</h3>
+        <WordCard v-for="w in weakest" :key="w.id" :word="w" :showSpeak="true" />
+      </div>
+      <div class="card empty-card" v-else-if="weakest && weakest.length === 0">
+        <p>暂无薄弱词汇</p>
+        <p class="hint">多做测验和闪卡复习，系统会帮你追踪薄弱点</p>
+      </div>
+    </template>
   </div>
 </template>
 
 <style scoped>
+.profile-page { max-width: 700px; margin: 0 auto; }
 h2 { margin-bottom: 4px; }
-.username { color: var(--text-secondary); font-size: 14px; }
+.username { color: var(--text-secondary); font-size: 14px; margin-bottom: 8px; }
+.error-msg { color: var(--danger); padding: 20px; text-align: center; }
 .weakest-section { margin-top: 20px; padding: 0; overflow: hidden; }
 .weakest-section h3 { padding: 16px 20px 8px; }
+.empty-card { text-align: center; padding: 40px 20px; margin-top: 20px; }
+.empty-card .hint { color: var(--text-secondary); font-size: 13px; margin-top: 6px; }
 </style>

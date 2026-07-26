@@ -4,6 +4,7 @@ from app.database import get_db
 from app.auth import get_current_user
 from app.models.user import User
 from app.models.quiz_history import QuizHistory
+from app.models.wrong_answer_book import WrongAnswerBook
 from app.schemas.quiz import (
     QuizGenerateRequest, QuizSubmitRequest,
     QuizResultResponse, GradedResult,
@@ -54,6 +55,28 @@ def submit_quiz(
         score_percent=score,
     )
     db.add(history)
+
+    # Auto-add wrong answers to wrong answer book
+    for r in results:
+        if not r["is_correct"]:
+            existing = (
+                db.query(WrongAnswerBook)
+                .filter(
+                    WrongAnswerBook.user_id == current_user.id,
+                    WrongAnswerBook.word_id == r["word_id"],
+                )
+                .first()
+            )
+            if not existing:
+                entry = WrongAnswerBook(
+                    user_id=current_user.id,
+                    word_id=r["word_id"],
+                    user_answer=r.get("user_answer", ""),
+                    correct_answer=r.get("correct_answer", ""),
+                    quiz_type=body.quiz_type,
+                )
+                db.add(entry)
+
     db.commit()
 
     graded = [GradedResult(**r) for r in results]
