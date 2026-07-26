@@ -5,7 +5,7 @@ import sqlite3
 import psycopg2
 import psycopg2.extras
 
-TABLES = ["users", "words", "user_progress", "quiz_history", "feedback"]
+TABLES = ["users", "words", "user_progress", "quiz_history", "feedback", "wrong_answer_book"]
 
 PG_DDL = {
     "users": """CREATE TABLE IF NOT EXISTS users (
@@ -43,6 +43,17 @@ PG_DDL = {
         wrong_count INTEGER DEFAULT 0,
         score_percent FLOAT NOT NULL,
         completed_at TIMESTAMP DEFAULT NOW()
+    )""",
+    "wrong_answer_book": """CREATE TABLE IF NOT EXISTS wrong_answer_book (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        word_id INTEGER NOT NULL REFERENCES words(id),
+        user_answer VARCHAR,
+        correct_answer VARCHAR NOT NULL,
+        quiz_type VARCHAR(20),
+        reviewed BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE(user_id, word_id)
     )""",
     "feedback": """CREATE TABLE IF NOT EXISTS feedback (
         id SERIAL PRIMARY KEY,
@@ -92,13 +103,7 @@ def migrate(sqlite_path: str, pg_url: str):
     pg_conn.commit()
     print("  Done.")
 
-    # Clear existing data
-    for table in reversed(TABLES):
-        pg_cur.execute(f"DELETE FROM {table}")
-    pg_conn.commit()
-    print("  Cleared existing data.")
-
-    # Migrate data
+    # Migrate data — use upsert to preserve existing PG data
     for table in TABLES:
         # Check if table exists in SQLite
         sql_cur.execute(
@@ -108,27 +113,48 @@ def migrate(sqlite_path: str, pg_url: str):
             print(f"  {table}: not in SQLite, skipping.")
             continue
 
-        sql_cur.execute(f"SELECT * FROM {table}")
-        rows = sql_cur.fetchall()
-        if not rows:
-            print(f"  {table}: 0 rows, skipping.")
+        sql_cur.execute(f"SELECT COUNT(*) FROM {table}")
+        row_count = sql_cur.fetchone()[0]
+        if row_count == 0:
+            print(f"  {table}: 0 rows in SQLite, skipping.")
             continue
 
-        keys = [d[0] for d in sql_cur.description]
-        columns = ", ".join(keys)
-        placeholders = ", ".join(["%s"] * len(keys))
-
-        data = [tuple(r[k] for k in keys) for r in rows]
-
-        # Use execute_values for batch insert
-        psycopg2.extras.execute_values(
-            pg_cur,
-            f"INSERT INTO {table} ({columns}) VALUES %s",
-            data,
-            template=f"({placeholders})",
-        )
-        pg_conn.commit()
-        print(f"  {table}: {len(rows)} rows copied.")
+        # For words table, only insert missing words (by id)
+        if table == "words":
+            sql_cur.execute(f"SELECT * FROM {table}")
+            rows = sql_cur.fetchall()
+            keys = [d[0] for d in sql_cur.description]
+            columns = ", ".join(keys)
+            placeholders = ", ".join(["%s"] * len(keys))
+            inserted = 0
+            for r in rows:
+                data = tuple(r[k] for k in keys)
+                try:
+                    pg_cur.execute(
+                        f"INSERT INTO {table} ({columns}) VALUES ({placeholders}) ON CONFLICT (id) DO NOTHING",
+                        data,
+                    )
+                    if pg_cur.rowcount > 0:
+                        inserted += 1
+                except Exception as e:
+                    print(f"    Skip row id={r['id']}: {e}")
+            pg_conn.commit()
+            print(f"  {table}: {inserted} new rows inserted (skipped existing).")
+        else:
+            sql_cur.execute(f"SELECT * FROM {table}")
+            rows = sql_cur.fetchall()
+            keys = [d[0] for d in sql_cur.description]
+            columns = ", ".join(keys)
+            placeholders = ", ".join(["%s"] * len(keys))
+            data = [tuple(r[k] for k in keys) for r in rows]
+            psycopg2.extras.execute_values(
+                pg_cur,
+                f"INSERT INTO {table} ({columns}) VALUES %s ON CONFLICT DO NOTHING",
+                data,
+                template=f"({placeholders})",
+            )
+            pg_conn.commit()
+            print(f"  {table}: {len(rows)} rows processed.")
 
     # Reset sequences
     for table in TABLES:

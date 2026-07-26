@@ -12,9 +12,7 @@ DOCX_PATH = os.path.join(os.path.dirname(__file__), "..", "四级词汇.docx")
 
 
 def parse_docx(path: str) -> list[dict]:
-    """Parse docx, deduplicating by english (first occurrence wins)."""
     doc = Document(path)
-    seen: set[str] = set()
     words = []
     for para in doc.paragraphs:
         text = para.text.strip()
@@ -25,10 +23,6 @@ def parse_docx(path: str) -> list[dict]:
             continue
         english = parts[0].strip()
         chinese = parts[1].strip()
-        if english.lower() in seen:
-            print(f"  Skipping duplicate: {english}")
-            continue
-        seen.add(english.lower())
         words.append({"english": english, "chinese": chinese})
     return words
 
@@ -38,19 +32,12 @@ def seed():
     db = SessionLocal()
 
     words = parse_docx(DOCX_PATH)
-
     existing = db.query(Word).count()
 
-    if existing == len(words):
-        print(f"Database has {existing} words. Nothing to do.")
+    if existing > 0:
+        print(f"Database already has {existing} words, skipping seed.")
         db.close()
         return
-
-    # Data is missing or duplicated — clean and reseed
-    if existing > 0:
-        print(f"Found {existing} word records (expected {len(words)}), cleaning up...")
-        db.query(Word).delete()
-        db.commit()
 
     print(f"Seeding {len(words)} words...")
     for w in words:
