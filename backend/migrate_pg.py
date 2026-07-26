@@ -119,27 +119,25 @@ def migrate(sqlite_path: str, pg_url: str):
             print(f"  {table}: 0 rows in SQLite, skipping.")
             continue
 
-        # For words table, only insert missing words (by id)
+        # For words table, only insert missing words (by id) — use batch
         if table == "words":
             sql_cur.execute(f"SELECT * FROM {table}")
             rows = sql_cur.fetchall()
+            if not rows:
+                print(f"  {table}: 0 rows, skipping.")
+                continue
             keys = [d[0] for d in sql_cur.description]
             columns = ", ".join(keys)
             placeholders = ", ".join(["%s"] * len(keys))
-            inserted = 0
-            for r in rows:
-                data = tuple(r[k] for k in keys)
-                try:
-                    pg_cur.execute(
-                        f"INSERT INTO {table} ({columns}) VALUES ({placeholders}) ON CONFLICT (id) DO NOTHING",
-                        data,
-                    )
-                    if pg_cur.rowcount > 0:
-                        inserted += 1
-                except Exception as e:
-                    print(f"    Skip row id={r['id']}: {e}")
+            data = [tuple(r[k] for k in keys) for r in rows]
+            psycopg2.extras.execute_values(
+                pg_cur,
+                f"INSERT INTO {table} ({columns}) VALUES %s ON CONFLICT (id) DO NOTHING",
+                data,
+                template=f"({placeholders})",
+            )
             pg_conn.commit()
-            print(f"  {table}: {inserted} new rows inserted (skipped existing).")
+            print(f"  {table}: {len(rows)} rows processed (duplicates skipped).")
         else:
             sql_cur.execute(f"SELECT * FROM {table}")
             rows = sql_cur.fetchall()
