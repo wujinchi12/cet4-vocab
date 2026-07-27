@@ -23,7 +23,7 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
         v-if="showFavorite"
         class="star-btn"
         :class="{ favorited: isFavorited }"
-        @click.stop="emit('toggle-favorite', word.word_id)"
+        @click.stop="emit('toggle-favorite', word.id)"
         :title="isFavorited ? '取消收藏' : '收藏'"
       >{{ isFavorited ? '★' : '☆' }}</button>
       <button

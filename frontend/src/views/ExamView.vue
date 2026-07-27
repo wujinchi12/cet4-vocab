@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed, onBeforeUnmount, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { getExamPapers, getExamPaper, submitExam, getExamHistory } from '../api'
 import ExamSection from '../components/ExamSection.vue'
 
@@ -148,6 +148,7 @@ function backToSelect() {
   loadPapers()
 }
 
+onMounted(loadPapers)
 onBeforeUnmount(() => stopTimer())
 </script>
 
