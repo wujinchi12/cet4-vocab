@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from app.database import get_db
 from app.auth import get_current_user
 from app.models.user import User
@@ -7,6 +8,27 @@ from app.models.word import Word
 from app.models.exam import ExamPaper, ExamQuestion, ExamHistory
 
 router = APIRouter(prefix="/api/exam", tags=["exam"])
+
+
+@router.post("/cleanup")
+def cleanup_duplicates(db: Session = Depends(get_db)):
+    dupes = (
+        db.query(ExamPaper.year, func.count(ExamPaper.id))
+        .group_by(ExamPaper.year)
+        .having(func.count(ExamPaper.id) > 1)
+        .all()
+    )
+    removed = 0
+    for year, _ in dupes:
+        ids = [row[0] for row in db.query(ExamPaper.id).filter(ExamPaper.year == year).order_by(ExamPaper.id).all()]
+        keep, remove = ids[0], ids[1:]
+        for rid in remove:
+            db.query(ExamQuestion).filter(ExamQuestion.paper_id == rid).delete()
+            db.query(ExamHistory).filter(ExamHistory.paper_id == rid).delete()
+            db.query(ExamPaper).filter(ExamPaper.id == rid).delete()
+        removed += len(remove)
+    db.commit()
+    return {"removed_duplicate_papers": removed}
 
 
 @router.get("/papers", response_model=list[dict])
