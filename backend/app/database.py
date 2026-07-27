@@ -26,6 +26,26 @@ class Base(DeclarativeBase):
     pass
 
 
+def ensure_schema():
+    """Add missing columns to existing tables (safe to call on every startup)."""
+    with engine.connect() as conn:
+        if DATABASE_URL.startswith("sqlite"):
+            # SQLite: check if column exists via PRAGMA
+            cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(quiz_history)").fetchall()]
+            if "source" not in cols:
+                conn.exec_driver_sql('ALTER TABLE quiz_history ADD COLUMN source VARCHAR DEFAULT "all"')
+                conn.commit()
+        else:
+            # PostgreSQL: add column if not exists
+            try:
+                conn.exec_driver_sql(
+                    "ALTER TABLE quiz_history ADD COLUMN IF NOT EXISTS source VARCHAR DEFAULT 'all'"
+                )
+                conn.commit()
+            except Exception:
+                pass
+
+
 def get_db():
     db = SessionLocal()
     try:

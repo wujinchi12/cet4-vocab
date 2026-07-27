@@ -9,9 +9,16 @@ def generate_quiz_questions(
     count: int,
     direction: str = "en_to_cn",
     user_id: int | None = None,
+    word_ids: list[int] | None = None,
 ) -> list[dict]:
-    all_words = db.query(Word).all()
-    if len(all_words) < 4:
+    if word_ids is not None:
+        if len(word_ids) == 0:
+            return []
+        all_words = db.query(Word).filter(Word.id.in_(word_ids)).all()
+    else:
+        all_words = db.query(Word).all()
+
+    if len(all_words) < 4 and quiz_type == "choice":
         return []
 
     selected = random.sample(all_words, min(count, len(all_words)))

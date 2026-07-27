@@ -5,6 +5,7 @@ class QuizGenerateRequest(BaseModel):
     quiz_type: str
     count: int = 10
     direction: str = "en_to_cn"
+    source: str = "all"  # "all" or "wrong"
 
 
 class QuizAnswer(BaseModel):
@@ -15,6 +16,7 @@ class QuizAnswer(BaseModel):
 class QuizSubmitRequest(BaseModel):
     quiz_type: str
     direction: str = "en_to_cn"
+    source: str = "all"
     answers: list[QuizAnswer]
 
 

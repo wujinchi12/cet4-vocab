@@ -20,8 +20,18 @@ def generate_quiz(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    word_ids = None
+    if body.source == "wrong":
+        wrong_words = (
+            db.query(WrongAnswerBook.word_id)
+            .filter(WrongAnswerBook.user_id == current_user.id)
+            .distinct()
+            .all()
+        )
+        word_ids = [row[0] for row in wrong_words]
+
     questions = generate_quiz_questions(
-        db, body.quiz_type, body.count, body.direction, current_user.id
+        db, body.quiz_type, body.count, body.direction, current_user.id, word_ids
     )
     result = []
     for q in questions:
@@ -49,6 +59,7 @@ def submit_quiz(
     history = QuizHistory(
         user_id=current_user.id,
         quiz_type=body.quiz_type,
+        source=body.source,
         total_questions=correct + wrong,
         correct_count=correct,
         wrong_count=wrong,
@@ -105,6 +116,7 @@ def quiz_history(
         {
             "id": e.id,
             "quiz_type": e.quiz_type,
+            "source": e.source,
             "total_questions": e.total_questions,
             "correct_count": e.correct_count,
             "wrong_count": e.wrong_count,

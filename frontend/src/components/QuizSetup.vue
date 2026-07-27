@@ -1,20 +1,45 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getWrongAnswerCount } from '../api'
 
 const emit = defineEmits(['start'])
 
 const quizType = ref('choice')
 const count = ref(10)
 const direction = ref('en_to_cn')
+const source = ref('all')
+const wrongCount = ref(0)
+
+onMounted(async () => {
+  try {
+    const { data } = await getWrongAnswerCount()
+    wrongCount.value = data.count
+  } catch { /* ignore */ }
+})
 
 function start() {
-  emit('start', { type: quizType.value, count: count.value, direction: direction.value })
+  emit('start', {
+    type: quizType.value,
+    count: count.value,
+    direction: direction.value,
+    source: source.value,
+  })
 }
 </script>
 
 <template>
   <div class="setup card">
     <h3>开始测验</h3>
+
+    <div class="field">
+      <label>题目来源</label>
+      <select v-model="source">
+        <option value="all">全部词汇</option>
+        <option value="wrong" :disabled="wrongCount === 0">
+          错题复习 {{ wrongCount > 0 ? `(${wrongCount} 题)` : '(暂无错题)' }}
+        </option>
+      </select>
+    </div>
 
     <div class="field">
       <label>题型</label>

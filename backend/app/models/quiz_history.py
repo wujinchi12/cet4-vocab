@@ -10,6 +10,7 @@ class QuizHistory(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     quiz_type = Column(String, nullable=False)
+    source = Column(String, default="all")
     total_questions = Column(Integer, nullable=False)
     correct_count = Column(Integer, nullable=False)
     wrong_count = Column(Integer, default=0)

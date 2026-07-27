@@ -38,6 +38,7 @@ PG_DDL = {
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id),
         quiz_type VARCHAR NOT NULL,
+        source VARCHAR DEFAULT 'all',
         total_questions INTEGER NOT NULL,
         correct_count INTEGER NOT NULL,
         wrong_count INTEGER DEFAULT 0,
@@ -160,6 +161,12 @@ def migrate(sqlite_path: str, pg_url: str):
             f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), "
             f"COALESCE((SELECT MAX(id) FROM {table}), 1))"
         )
+    pg_conn.commit()
+
+    # Post-migration: add missing columns
+    pg_cur.execute(
+        "ALTER TABLE quiz_history ADD COLUMN IF NOT EXISTS source VARCHAR DEFAULT 'all'"
+    )
     pg_conn.commit()
 
     # Verify

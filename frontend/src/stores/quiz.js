@@ -7,19 +7,21 @@ export const useQuizStore = defineStore('quiz', {
     results: null,
     quizType: 'choice',
     direction: 'en_to_cn',
+    source: 'all',
     inProgress: false,
   }),
   actions: {
-    async startQuiz(type, count, direction) {
+    async startQuiz(type, count, direction, source = 'all') {
       this.quizType = type
       this.direction = direction
-      const { data } = await generateQuiz({ quiz_type: type, count, direction })
+      this.source = source
+      const { data } = await generateQuiz({ quiz_type: type, count, direction, source })
       this.questions = data
       this.results = null
       this.inProgress = true
     },
     async finishQuiz(answers) {
-      const { data } = await submitQuiz({ quiz_type: this.quizType, direction: this.direction, answers })
+      const { data } = await submitQuiz({ quiz_type: this.quizType, direction: this.direction, source: this.source, answers })
       this.results = data
       this.inProgress = false
       return data

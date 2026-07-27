@@ -3,9 +3,17 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-from app.database import engine, Base
+from app.database import engine, Base, ensure_schema
 
 Base.metadata.create_all(bind=engine)
+ensure_schema()
+
+# Run data enrichment on startup (idempotent — only adds missing words / updates null POS)
+try:
+    from scripts.enrich_words import enrich
+    enrich()
+except Exception:
+    pass
 
 app = FastAPI(title="CET-4 Vocabulary API")
 

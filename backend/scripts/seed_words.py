@@ -28,6 +28,8 @@ def parse_docx(path: str) -> list[dict]:
 
 
 def seed():
+    from scripts.enrich_words import extract_pos
+
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
@@ -41,7 +43,8 @@ def seed():
 
     print(f"Seeding {len(words)} words...")
     for w in words:
-        db.add(Word(english=w["english"], chinese=w["chinese"]))
+        pos = extract_pos(w["english"], w["chinese"])
+        db.add(Word(english=w["english"], chinese=w["chinese"], part_of_speech=pos))
 
     db.commit()
     print(f"Seeded {len(words)} words successfully.")

@@ -29,6 +29,7 @@ api.interceptors.response.use(
 export const register = (data) => api.post('/auth/register', data)
 export const login = (data) => api.post('/auth/login', data)
 export const getWords = (params) => api.get('/words', { params })
+export const getPosList = () => api.get('/words/pos/list')
 export const getWord = (id) => api.get(`/words/${id}`)
 export const getProgressSummary = () => api.get('/progress')
 export const getDueWords = (limit = 20) => api.get('/progress/due', { params: { limit } })
@@ -40,6 +41,7 @@ export const getQuizHistory = () => api.get('/quiz/history')
 
 export const addWrongAnswers = (data) => api.post('/wrong-answers/add', data)
 export const getWrongAnswers = (params) => api.get('/wrong-answers', { params })
+export const getWrongAnswerCount = () => api.get('/wrong-answers/count')
 export const removeWrongAnswer = (wordId) => api.delete(`/wrong-answers/${wordId}`)
 export const clearWrongAnswers = () => api.post('/wrong-answers/clear')
 

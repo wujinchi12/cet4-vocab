@@ -77,6 +77,20 @@ def list_wrong_answers(
     return {"items": result, "total": total, "page": page, "size": size}
 
 
+@router.get("/count")
+def wrong_answer_count(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    count = (
+        db.query(WrongAnswerBook.word_id)
+        .filter(WrongAnswerBook.user_id == current_user.id)
+        .distinct()
+        .count()
+    )
+    return {"count": count}
+
+
 @router.delete("/{word_id}")
 def remove_wrong_answer(
     word_id: int,

@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { getWords } from '../api'
+import { ref, onMounted, computed, watch } from 'vue'
+import { getWords, getPosList } from '../api'
 import SearchBar from '../components/SearchBar.vue'
 import WordCard from '../components/WordCard.vue'
 
@@ -9,14 +9,25 @@ const total = ref(0)
 const page = ref(1)
 const size = 25
 const search = ref('')
+const posFilter = ref('')
+const posTags = ref([])
 const loading = ref(false)
 
 const totalPages = computed(() => Math.ceil(total.value / size))
 
+async function loadPosTags() {
+  try {
+    const { data } = await getPosList()
+    posTags.value = data.tags
+  } catch { /* ignore */ }
+}
+
 async function loadWords() {
   loading.value = true
   try {
-    const { data } = await getWords({ page: page.value, size, search: search.value })
+    const params = { page: page.value, size, search: search.value }
+    if (posFilter.value) params.pos = posFilter.value
+    const { data } = await getWords(params)
     words.value = data.items
     total.value = data.total
   } finally {
@@ -30,12 +41,20 @@ function onSearch(val) {
   loadWords()
 }
 
+function onPosChange() {
+  page.value = 1
+  loadWords()
+}
+
 function goPage(p) {
   page.value = p
   loadWords()
 }
 
-onMounted(loadWords)
+onMounted(() => {
+  loadPosTags()
+  loadWords()
+})
 </script>
 
 <template>
@@ -46,7 +65,13 @@ onMounted(loadWords)
     </header>
 
     <div class="search-card card">
-      <SearchBar @search="onSearch" />
+      <div class="filter-row">
+        <SearchBar @search="onSearch" />
+        <select v-model="posFilter" @change="onPosChange" class="pos-select">
+          <option value="">全部词性</option>
+          <option v-for="tag in posTags" :key="tag" :value="tag">{{ tag }}</option>
+        </select>
+      </div>
     </div>
 
     <div class="word-list card">
@@ -57,7 +82,7 @@ onMounted(loadWords)
         <div class="empty">没有找到匹配的单词</div>
       </template>
       <template v-else>
-        <WordCard v-for="w in words" :key="w.id" :word="w" :show-speak="true" />
+        <WordCard v-for="w in words" :key="w.id" :word="w" :show-speak="true" :show-pos="true" />
       </template>
     </div>
 
@@ -84,6 +109,21 @@ onMounted(loadWords)
 .search-card {
   margin-bottom: 16px;
   padding: 12px 16px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-row > :first-child {
+  flex: 1;
+}
+
+.pos-select {
+  width: 130px;
+  flex-shrink: 0;
 }
 
 .word-list {

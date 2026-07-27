@@ -18,7 +18,7 @@ async function start(configData) {
   config.value = configData
   const apiType = configData.type === 'listening' ? 'fill' : configData.type
   const apiDir = configData.type === 'listening' ? 'en_to_cn' : configData.direction
-  await store.startQuiz(apiType, configData.count, apiDir)
+  await store.startQuiz(apiType, configData.count, apiDir, configData.source || 'all')
   currentIndex.value = 0
   answers.value = []
   if (configData.type === 'match') {
@@ -97,7 +97,7 @@ function newQuiz() {
       v-else-if="step === 'result'"
       :result="store.results"
       :quiz-type="config.type"
-      :quiz-type-name="config.type === 'choice' ? '选择题' : config.type === 'fill' ? '填空题' : config.type === 'match' ? '配对题' : '听音辨义'"
+      :quiz-type-name="config.source === 'wrong' ? '错题复习' : config.type === 'choice' ? '选择题' : config.type === 'fill' ? '填空题' : config.type === 'match' ? '配对题' : '听音辨义'"
       @retry="retry"
       @new-quiz="newQuiz"
     />
