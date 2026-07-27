@@ -441,10 +441,24 @@ def seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
-    if db.query(ExamPaper).count() > 0:
-        print("Exam papers already exist, skipping seed.")
-        db.close()
-        return
+    # Deduplicate: remove duplicate papers for the same year (keep lowest id)
+    from sqlalchemy import func as sqlfunc
+    dupes = (
+        db.query(ExamPaper.year, sqlfunc.count(ExamPaper.id))
+        .group_by(ExamPaper.year)
+        .having(sqlfunc.count(ExamPaper.id) > 1)
+        .all()
+    )
+    for year, _ in dupes:
+        ids = [row[0] for row in db.query(ExamPaper.id).filter(ExamPaper.year == year).order_by(ExamPaper.id).all()]
+        keep, remove = ids[0], ids[1:]
+        for rid in remove:
+            db.query(ExamQuestion).filter(ExamQuestion.paper_id == rid).delete()
+            db.query(ExamHistory).filter(ExamHistory.paper_id == rid).delete()
+            db.query(ExamPaper).filter(ExamPaper.id == rid).delete()
+        print(f"Deduped {year}: kept id={keep}, removed ids={remove}")
+    if dupes:
+        db.commit()
 
     all_words = db.query(Word).all()
     if len(all_words) < 30:
@@ -452,7 +466,16 @@ def seed():
         db.close()
         return
 
-    for year in [2022, 2023, 2024, 2025, 2026]:
+    years_to_seed = [2022, 2023, 2024, 2025, 2026]
+    existing_years = {row[0] for row in db.query(ExamPaper.year).filter(ExamPaper.year.in_(years_to_seed)).all()}
+    missing_years = [y for y in years_to_seed if y not in existing_years]
+
+    if not missing_years:
+        print("All exam papers already exist, skipping seed.")
+        db.close()
+        return
+
+    for year in missing_years:
         print(f"Generating paper for {year}...")
 
         paper = ExamPaper(
