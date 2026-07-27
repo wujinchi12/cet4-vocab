@@ -48,6 +48,7 @@ function start() {
         <option value="fill">填空题</option>
         <option value="match">配对题</option>
         <option value="listening">听音辨义</option>
+        <option value="spelling">拼写训练</option>
       </select>
     </div>
 

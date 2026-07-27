@@ -45,6 +45,16 @@ export const getWrongAnswerCount = () => api.get('/wrong-answers/count')
 export const removeWrongAnswer = (wordId) => api.delete(`/wrong-answers/${wordId}`)
 export const clearWrongAnswers = () => api.post('/wrong-answers/clear')
 
+export const toggleFavorite = (wordId) => api.post('/favorites/toggle', { word_id: wordId })
+export const getFavorites = (params) => api.get('/favorites', { params })
+export const removeFavorite = (wordId) => api.delete(`/favorites/${wordId}`)
+export const clearFavorites = () => api.post('/favorites/clear')
+
+export const getExamPapers = () => api.get('/exam/papers')
+export const getExamPaper = (id) => api.get(`/exam/papers/${id}`)
+export const submitExam = (data) => api.post('/exam/submit', data)
+export const getExamHistory = () => api.get('/exam/history')
+
 export const submitFeedback = (data) => api.post('/feedback', data)
 export const getLeaderboard = (limit = 50) => api.get('/leaderboard', { params: { limit } })
 

@@ -6,6 +6,7 @@ import MultipleChoice from '../components/MultipleChoice.vue'
 import FillBlank from '../components/FillBlank.vue'
 import MatchPairs from '../components/MatchPairs.vue'
 import ListeningPractice from '../components/ListeningPractice.vue'
+import SpellingPractice from '../components/SpellingPractice.vue'
 import QuizResult from '../components/QuizResult.vue'
 
 const store = useQuizStore()
@@ -16,8 +17,14 @@ const config = ref(null)
 
 async function start(configData) {
   config.value = configData
-  const apiType = configData.type === 'listening' ? 'fill' : configData.type
-  const apiDir = configData.type === 'listening' ? 'en_to_cn' : configData.direction
+  let apiType, apiDir
+  if (configData.type === 'listening') {
+    apiType = 'fill'; apiDir = 'en_to_cn'
+  } else if (configData.type === 'spelling') {
+    apiType = 'fill'; apiDir = 'cn_to_en'
+  } else {
+    apiType = configData.type; apiDir = configData.direction
+  }
   await store.startQuiz(apiType, configData.count, apiDir, configData.source || 'all')
   currentIndex.value = 0
   answers.value = []
@@ -25,6 +32,8 @@ async function start(configData) {
     step.value = 'match'
   } else if (configData.type === 'listening') {
     step.value = 'listening'
+  } else if (configData.type === 'spelling') {
+    step.value = 'spelling'
   } else {
     step.value = 'question'
   }
@@ -93,11 +102,19 @@ function newQuiz() {
       @answer="handleAnswer"
     />
 
+    <SpellingPractice
+      v-else-if="step === 'spelling'"
+      :question="store.questions[currentIndex]"
+      :index="currentIndex"
+      :total="store.questions.length"
+      @answer="handleAnswer"
+    />
+
     <QuizResult
       v-else-if="step === 'result'"
       :result="store.results"
       :quiz-type="config.type"
-      :quiz-type-name="config.source === 'wrong' ? '错题复习' : config.type === 'choice' ? '选择题' : config.type === 'fill' ? '填空题' : config.type === 'match' ? '配对题' : '听音辨义'"
+      :quiz-type-name="config.source === 'wrong' ? '错题复习' : config.type === 'choice' ? '选择题' : config.type === 'fill' ? '填空题' : config.type === 'match' ? '配对题' : config.type === 'listening' ? '听音辨义' : '拼写训练'"
       @retry="retry"
       @new-quiz="newQuiz"
     />

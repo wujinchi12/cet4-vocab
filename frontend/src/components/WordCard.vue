@@ -5,7 +5,11 @@ defineProps({
   word: { type: Object, required: true },
   showSpeak: { type: Boolean, default: false },
   showPos: { type: Boolean, default: false },
+  showFavorite: { type: Boolean, default: false },
+  isFavorited: { type: Boolean, default: false },
 })
+
+const emit = defineEmits(['toggle-favorite'])
 
 const { speak, speaking } = useSpeech()
 
@@ -15,6 +19,13 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
 <template>
   <div class="word-card">
     <div class="left">
+      <button
+        v-if="showFavorite"
+        class="star-btn"
+        :class="{ favorited: isFavorited }"
+        @click.stop="emit('toggle-favorite', word.word_id)"
+        :title="isFavorited ? '取消收藏' : '收藏'"
+      >{{ isFavorited ? '★' : '☆' }}</button>
       <button
         v-if="showSpeak"
         class="speak-btn"
@@ -42,6 +53,13 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
 }
 .word-card:hover { background: rgba(255,255,255,0.06); }
 .left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.star-btn {
+  width: 26px; height: 26px; border: none; background: none;
+  font-size: 18px; cursor: pointer; flex-shrink: 0; padding: 0;
+  color: var(--text-secondary); transition: all 0.15s; line-height: 1;
+}
+.star-btn:hover { color: #fbbf24; }
+.star-btn.favorited { color: #fbbf24; }
 .speak-btn {
   width: 26px; height: 26px; border-radius: 50%;
   border: 1px solid var(--border); background: rgba(255,255,255,0.04);

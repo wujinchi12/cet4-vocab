@@ -1,8 +1,11 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { getWords, getPosList } from '../api'
+import { useFavorites } from '../composables/useFavorites'
 import SearchBar from '../components/SearchBar.vue'
 import WordCard from '../components/WordCard.vue'
+
+const { isFavorited, toggle } = useFavorites()
 
 const words = ref([])
 const total = ref(0)
@@ -82,7 +85,12 @@ onMounted(() => {
         <div class="empty">没有找到匹配的单词</div>
       </template>
       <template v-else>
-        <WordCard v-for="w in words" :key="w.id" :word="w" :show-speak="true" :show-pos="true" />
+        <WordCard
+            v-for="w in words" :key="w.id" :word="w"
+            :show-speak="true" :show-pos="true" :show-favorite="true"
+            :is-favorited="isFavorited(w.id)"
+            @toggle-favorite="toggle"
+          />
       </template>
     </div>
 

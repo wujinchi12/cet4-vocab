@@ -21,6 +21,8 @@ function handleLogout() {
           <router-link to="/flashcard">闪卡</router-link>
           <router-link to="/quiz">测验</router-link>
           <router-link to="/wrong-answers">错题本</router-link>
+          <router-link to="/favorites">收藏库</router-link>
+          <router-link to="/exam">真题</router-link>
           <router-link to="/leaderboard">排行榜</router-link>
           <router-link to="/profile">我的</router-link>
           <button class="btn-outline" @click="handleLogout">退出</button>

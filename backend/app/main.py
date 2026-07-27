@@ -42,7 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from app.routes import auth, words, progress, quiz, leaderboard, admin, feedback, wrong_answers
+from app.routes import auth, words, progress, quiz, leaderboard, admin, feedback, wrong_answers, favorites, exam
 
 app.include_router(auth.router)
 app.include_router(words.router)
@@ -52,6 +52,15 @@ app.include_router(leaderboard.router)
 app.include_router(admin.router)
 app.include_router(feedback.router)
 app.include_router(wrong_answers.router)
+app.include_router(favorites.router)
+app.include_router(exam.router)
+
+# Seed exam data on startup (idempotent)
+try:
+    from scripts.seed_exams import seed
+    seed()
+except Exception:
+    pass
 
 
 @app.get("/api/health")
