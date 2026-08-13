@@ -15,6 +15,27 @@ def seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
 
+    # Deduplicate: gunicorn runs multiple workers, each executing startup seeding,
+    # so the idempotency check below can be passed by several workers concurrently
+    # (english is not globally unique). Remove duplicate CET-6 rows (same english,
+    # keep lowest id) to converge back to exactly one row per word.
+    from sqlalchemy import func as sqlfunc
+    dupes = (
+        db.query(Word.english, sqlfunc.count(Word.id))
+        .filter(Word.level == "cet6")
+        .group_by(Word.english)
+        .having(sqlfunc.count(Word.id) > 1)
+        .all()
+    )
+    for english, _ in dupes:
+        ids = [row[0] for row in db.query(Word.id).filter(Word.level == "cet6", Word.english == english).order_by(Word.id).all()]
+        keep, remove = ids[0], ids[1:]
+        for rid in remove:
+            db.query(Word).filter(Word.id == rid).delete()
+        print(f"Deduped cet6 '{english}': kept id={keep}, removed ids={remove}")
+    if dupes:
+        db.commit()
+
     existing = db.query(Word).filter(Word.level == "cet6").count()
     if existing > 0:
         print(f"CET-6 words already seeded ({existing}), skipping.")
