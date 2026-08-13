@@ -69,6 +69,13 @@ try:
 except Exception:
     pass
 
+# Backfill CET-4 phonetics on startup (idempotent)
+try:
+    from scripts.seed_cet4_phonetics import seed as seed_cet4_phonetics
+    seed_cet4_phonetics()
+except Exception:
+    pass
+
 
 @app.get("/api/health")
 def health_check():
