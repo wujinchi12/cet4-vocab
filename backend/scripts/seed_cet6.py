@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import re
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -35,6 +36,18 @@ def seed():
         print(f"Deduped cet6 '{english}': kept id={keep}, removed ids={remove}")
     if dupes:
         db.commit()
+
+    # Clean leaked inline phonetics (e.g. "(/æbˈstrækt/)") from CET-6 definitions.
+    leaked = re.compile(r"\s*\(/[^)]*?/\)\s*")
+    changed = 0
+    for w in db.query(Word).filter(Word.level == "cet6").all():
+        new = re.sub(r"\s+", " ", leaked.sub(" ", w.chinese or "")).strip()
+        if new != w.chinese:
+            w.chinese = new
+            changed += 1
+    if changed:
+        db.commit()
+        print(f"Cleaned leaked phonetics in {changed} CET-6 definitions.")
 
     existing = db.query(Word).filter(Word.level == "cet6").count()
     if existing > 0:

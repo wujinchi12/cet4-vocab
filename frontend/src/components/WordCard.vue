@@ -47,13 +47,21 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
 .word-card {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 16px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--border);
   transition: background 0.1s;
 }
 .word-card:hover { background: rgba(255,255,255,0.06); }
-.left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  min-width: 0;
+}
 .star-btn {
   width: 26px; height: 26px; border: none; background: none;
   font-size: 18px; cursor: pointer; flex-shrink: 0; padding: 0;
@@ -70,12 +78,20 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
 }
 .speak-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(99,102,241,0.1); }
 .speak-btn.playing { border-color: var(--primary); color: var(--primary); background: rgba(99,102,241,0.15); }
-.english { font-weight: 600; font-size: 16px; color: var(--primary); }
-.phonetic { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+.english { font-weight: 600; font-size: 16px; color: var(--primary); white-space: nowrap; }
+.phonetic { font-size: 12px; color: var(--text-secondary); word-break: break-word; }
 .pos-badge {
   font-size: 11px; padding: 1px 6px; border-radius: 8px;
   background: rgba(99,102,241,0.15); color: var(--primary);
   flex-shrink: 0; white-space: nowrap;
 }
-.chinese { font-size: 15px; color: var(--text-secondary); flex-shrink: 0; }
+.chinese {
+  font-size: 15px;
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  word-break: break-word;
+  line-height: 1.5;
+}
 </style>

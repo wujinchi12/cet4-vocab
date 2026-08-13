@@ -69,16 +69,23 @@ function flip() { flipped.value = !flipped.value }
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   backface-visibility: hidden;
+  padding: 20px;
+  overflow-y: auto;
 }
 .card-back { transform: rotateY(180deg); }
 .word-text { font-size: 28px; font-weight: 700; }
-.word-text.chinese { font-size: 24px; }
+.word-text.chinese {
+  font-size: 17px;
+  line-height: 1.5;
+  word-break: break-word;
+  text-align: center;
+}
 .phonetic { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
 .hint { margin-top: 16px; font-size: 13px; color: var(--text-secondary); }
 
 @media (max-width: 480px) {
   .flashcard { height: 200px; }
   .word-text { font-size: 22px; }
-  .word-text.chinese { font-size: 20px; }
+  .word-text.chinese { font-size: 15px; }
 }
 </style>

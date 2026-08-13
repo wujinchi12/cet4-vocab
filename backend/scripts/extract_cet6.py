@@ -46,6 +46,7 @@ def parse_definition(raw: str) -> tuple[str, str | None]:
 
     text = re.sub(r"<a class='pos_(\w+)'>([^<]*)</a>", repl, raw or "")
     text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"\(/[^)]*?/\)", " ", text)
     text = html.unescape(text).replace("\xa0", " ")
     text = re.sub(r"\s+", " ", text).strip()
     return text, " ".join(pos_set) or None
