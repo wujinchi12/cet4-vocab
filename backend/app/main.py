@@ -33,6 +33,9 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+# Capacitor WebView (APK) serves from a localhost origin with its own scheme.
+# Add these so the Android app can call the API (CORS would otherwise block it).
+cors_origins += ["https://localhost", "http://localhost", "capacitor://localhost"]
 
 app.add_middleware(
     CORSMiddleware,
