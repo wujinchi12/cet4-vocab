@@ -69,6 +69,13 @@ try:
 except Exception:
     pass
 
+# Correct malformed CET-4 words on startup (idempotent)
+try:
+    from scripts.seed_fix_words import seed as seed_fix_words
+    seed_fix_words()
+except Exception:
+    pass
+
 # Backfill CET-4 phonetics on startup (idempotent)
 try:
     from scripts.seed_cet4_phonetics import seed as seed_cet4_phonetics

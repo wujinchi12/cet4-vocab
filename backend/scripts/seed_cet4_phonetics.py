@@ -9,6 +9,7 @@ from app.database import SessionLocal, engine, Base
 from app.models.word import Word
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "cet4_phonetics.json")
+OVERRIDE_PATH = os.path.join(os.path.dirname(__file__), "cet4_phonetics_override.json")
 
 
 def seed():
@@ -18,11 +19,17 @@ def seed():
     with open(DATA_PATH, encoding="utf-8") as fh:
         mapping = json.load(fh)
 
+    override = {}
+    if os.path.isfile(OVERRIDE_PATH):
+        with open(OVERRIDE_PATH, encoding="utf-8") as fh:
+            override = json.load(fh)
+
     updated = 0
     for w in db.query(Word).filter(Word.level == "cet4").all():
         if w.phonetic:
             continue
-        ph = mapping.get(w.english.lower())
+        key = w.english.lower()
+        ph = mapping.get(key) or override.get(key)
         if ph:
             w.phonetic = ph
             updated += 1
