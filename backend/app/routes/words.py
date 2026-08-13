@@ -13,6 +13,7 @@ def list_words(
     size: int = Query(50, ge=1, le=100),
     search: str = Query("", max_length=100),
     pos: str = Query("", max_length=20),
+    level: str = Query("", max_length=10),
     db: Session = Depends(get_db),
 ):
     query = db.query(Word)
@@ -22,6 +23,8 @@ def list_words(
         )
     if pos:
         query = query.filter(Word.part_of_speech.like(f"%{pos}%"))
+    if level:
+        query = query.filter(Word.level == level)
     total = query.count()
     items = query.order_by(Word.id).offset((page - 1) * size).limit(size).all()
     return WordListResponse(
@@ -33,9 +36,12 @@ def list_words(
 
 
 @router.get("/pos/list")
-def list_pos(db: Session = Depends(get_db)):
+def list_pos(level: str = Query("", max_length=10), db: Session = Depends(get_db)):
     """Return distinct POS tags from the database."""
-    rows = db.query(Word.part_of_speech).distinct().all()
+    query = db.query(Word.part_of_speech)
+    if level:
+        query = query.filter(Word.level == level)
+    rows = query.distinct().all()
     tags = set()
     for row in rows:
         if row[0]:

@@ -1,12 +1,14 @@
 <script setup>
 import { useAuthStore } from '../stores/auth'
+import { useLevel } from '../composables/useLevel'
 const auth = useAuthStore()
+const { level } = useLevel()
 </script>
 
 <template>
   <div class="home">
-    <h1>四级词汇学习</h1>
-    <p class="subtitle">掌握 4444 个 CET-4 核心词汇 · 吴瑾赤 出品</p>
+    <h1>{{ level === 'cet4' ? '四级词汇学习' : '六级词汇学习' }}</h1>
+    <p class="subtitle">覆盖四级 / 六级核心词汇 · 吴瑾赤 出品</p>
     <div class="mode-cards" v-if="auth.isLoggedIn">
       <router-link to="/words" class="mode-card card">
         <h3>词汇表</h3>

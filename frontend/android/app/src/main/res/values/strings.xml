@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CETVocab</string>
+    <string name="title_activity_main">CETVocab</string>
+    <string name="package_name">com.wujinchi.cetvocab</string>
+    <string name="custom_url_scheme">com.wujinchi.cetvocab</string>
+</resources>

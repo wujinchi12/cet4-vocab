@@ -22,6 +22,7 @@ function flip() { flipped.value = !flipped.value }
           title="发音"
         >&#9654;</button>
         <span class="word-text">{{ word?.english }}</span>
+        <span v-if="word?.phonetic" class="phonetic">{{ word.phonetic }}</span>
         <span class="hint">点击翻转</span>
       </div>
       <div class="card-back">
@@ -72,6 +73,7 @@ function flip() { flipped.value = !flipped.value }
 .card-back { transform: rotateY(180deg); }
 .word-text { font-size: 28px; font-weight: 700; }
 .word-text.chinese { font-size: 24px; }
+.phonetic { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
 .hint { margin-top: 16px; font-size: 13px; color: var(--text-secondary); }
 
 @media (max-width: 480px) {

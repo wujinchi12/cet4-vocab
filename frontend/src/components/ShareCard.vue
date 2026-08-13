@@ -31,7 +31,7 @@ async function downloadImage() {
     backgroundColor: '#ffffff',
   })
   const link = document.createElement('a')
-  link.download = `CET4-quiz-${score.value}.png`
+  link.download = `CET-quiz-${score.value}.png`
   link.href = canvas.toDataURL('image/png')
   link.click()
   loading.value = false
@@ -46,7 +46,7 @@ defineExpose({ downloadImage })
     <div ref="cardRef" class="share-card">
       <div class="card-bg">
         <div class="card-header">
-          <span class="logo-text">CET-4 词汇学习</span>
+          <span class="logo-text">CET 词汇学习</span>
           <span class="author">吴瑾赤</span>
         </div>
 

@@ -89,6 +89,24 @@ function drawBackground() {
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, w, h)
 
+  // Drifting color glows — glassmorphism ambience
+  const drift = Math.sin(time * 0.005)
+  const glow1x = w * 0.15 + drift * w * 0.05
+  const glow1y = h * 0.2 + Math.cos(time * 0.004) * h * 0.04
+  const glow1 = ctx.createRadialGradient(glow1x, glow1y, 0, glow1x, glow1y, w * 0.4)
+  glow1.addColorStop(0, 'rgba(124, 58, 237, 0.18)')
+  glow1.addColorStop(1, 'rgba(124, 58, 237, 0)')
+  ctx.fillStyle = glow1
+  ctx.fillRect(0, 0, w, h)
+
+  const glow2x = w * 0.85 + Math.cos(time * 0.005) * w * 0.05
+  const glow2y = h * 0.75 + drift * h * 0.05
+  const glow2 = ctx.createRadialGradient(glow2x, glow2y, 0, glow2x, glow2y, w * 0.35)
+  glow2.addColorStop(0, 'rgba(34, 211, 238, 0.12)')
+  glow2.addColorStop(1, 'rgba(34, 211, 238, 0)')
+  ctx.fillStyle = glow2
+  ctx.fillRect(0, 0, w, h)
+
   // Subtle nebula patches
   const nebula1 = ctx.createRadialGradient(w * 0.2, h * 0.3, 0, w * 0.2, h * 0.3, w * 0.25)
   nebula1.addColorStop(0, 'rgba(20, 10, 60, 0.15)')

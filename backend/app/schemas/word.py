@@ -7,6 +7,8 @@ class WordOut(BaseModel):
     chinese: str
     part_of_speech: str | None
     difficulty_level: int
+    level: str
+    phonetic: str | None
 
     model_config = {"from_attributes": True}
 

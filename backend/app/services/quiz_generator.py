@@ -10,13 +10,17 @@ def generate_quiz_questions(
     direction: str = "en_to_cn",
     user_id: int | None = None,
     word_ids: list[int] | None = None,
+    level: str | None = None,
 ) -> list[dict]:
     if word_ids is not None:
         if len(word_ids) == 0:
             return []
         all_words = db.query(Word).filter(Word.id.in_(word_ids)).all()
     else:
-        all_words = db.query(Word).all()
+        query = db.query(Word)
+        if level:
+            query = query.filter(Word.level == level)
+        all_words = query.all()
 
     if len(all_words) < 4 and quiz_type == "choice":
         return []

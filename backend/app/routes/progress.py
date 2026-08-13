@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.auth import get_current_user
@@ -31,21 +31,21 @@ def get_progress_summary(
 @router.get("/due", response_model=list[ProgressOut])
 def get_due_words(
     limit: int = 20,
+    level: str = Query("", max_length=10),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     from datetime import datetime
     now = datetime.utcnow()
 
-    entries = (
-        db.query(UserProgress)
-        .filter(
-            UserProgress.user_id == current_user.id,
-            (UserProgress.next_review_at <= now) | (UserProgress.next_review_at.is_(None)),
-        )
-        .limit(limit)
-        .all()
+    entries_query = db.query(UserProgress).filter(
+        UserProgress.user_id == current_user.id,
+        (UserProgress.next_review_at <= now) | (UserProgress.next_review_at.is_(None)),
     )
+    if level:
+        entries_query = entries_query.join(Word, UserProgress.word_id == Word.id).filter(Word.level == level)
+
+    entries = entries_query.limit(limit).all()
 
     result = []
     for entry in entries:
@@ -64,7 +64,10 @@ def get_due_words(
     # Fallback: new user with no progress records — return random words
     if not result:
         import random
-        all_words = db.query(Word).all()
+        word_query = db.query(Word)
+        if level:
+            word_query = word_query.filter(Word.level == level)
+        all_words = word_query.all()
         if all_words:
             picked = random.sample(all_words, min(limit, len(all_words)))
             for word in picked:
@@ -84,12 +87,15 @@ def get_due_words(
 @router.get("/weakest", response_model=list[ProgressOut])
 def get_weakest_words(
     limit: int = 20,
+    level: str = Query("", max_length=10),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    entries_query = db.query(UserProgress).filter(UserProgress.user_id == current_user.id)
+    if level:
+        entries_query = entries_query.join(Word, UserProgress.word_id == Word.id).filter(Word.level == level)
     entries = (
-        db.query(UserProgress)
-        .filter(UserProgress.user_id == current_user.id)
+        entries_query
         .order_by(UserProgress.wrong_count.desc(), UserProgress.correct_count.asc())
         .limit(limit)
         .all()

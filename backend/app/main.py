@@ -15,7 +15,7 @@ try:
 except Exception:
     pass
 
-app = FastAPI(title="CET-4 Vocabulary API")
+app = FastAPI(title="CET Vocabulary API")
 
 
 @app.exception_handler(Exception)
@@ -59,6 +59,13 @@ app.include_router(exam.router)
 try:
     from scripts.seed_exams import seed
     seed()
+except Exception:
+    pass
+
+# Seed CET-6 words on startup (idempotent)
+try:
+    from scripts.seed_cet6 import seed as seed_cet6
+    seed_cet6()
 except Exception:
     pass
 

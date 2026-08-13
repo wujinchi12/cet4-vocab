@@ -1,9 +1,12 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { getDueWords, updateProgress } from '../api'
+import { useLevel } from '../composables/useLevel'
 import FlashCard from '../components/FlashCard.vue'
 import ProgressBar from '../components/ProgressBar.vue'
 import SessionControls from '../components/SessionControls.vue'
+
+const { level } = useLevel()
 
 const words = ref([])
 const index = ref(0)
@@ -14,7 +17,7 @@ const submitting = ref(false)
 async function loadWords() {
   loading.value = true
   try {
-    const { data } = await getDueWords(20)
+    const { data } = await getDueWords({ limit: 20, level: level.value })
     words.value = data
     index.value = 0
     finished.value = data.length === 0
@@ -46,6 +49,8 @@ async function handleAnswer(knewIt) {
 }
 
 onMounted(loadWords)
+
+watch(level, loadWords)
 </script>
 
 <template>

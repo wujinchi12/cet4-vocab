@@ -2,10 +2,12 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { getWords, getPosList } from '../api'
 import { useFavorites } from '../composables/useFavorites'
+import { useLevel } from '../composables/useLevel'
 import SearchBar from '../components/SearchBar.vue'
 import WordCard from '../components/WordCard.vue'
 
 const { isFavorited, toggle } = useFavorites()
+const { level } = useLevel()
 
 const words = ref([])
 const total = ref(0)
@@ -20,7 +22,7 @@ const totalPages = computed(() => Math.ceil(total.value / size))
 
 async function loadPosTags() {
   try {
-    const { data } = await getPosList()
+    const { data } = await getPosList({ level: level.value })
     posTags.value = data.tags
   } catch { /* ignore */ }
 }
@@ -28,7 +30,7 @@ async function loadPosTags() {
 async function loadWords() {
   loading.value = true
   try {
-    const params = { page: page.value, size, search: search.value }
+    const params = { page: page.value, size, search: search.value, level: level.value }
     if (posFilter.value) params.pos = posFilter.value
     const { data } = await getWords(params)
     words.value = data.items
@@ -55,6 +57,12 @@ function goPage(p) {
 }
 
 onMounted(() => {
+  loadPosTags()
+  loadWords()
+})
+
+watch(level, () => {
+  page.value = 1
   loadPosTags()
   loadWords()
 })

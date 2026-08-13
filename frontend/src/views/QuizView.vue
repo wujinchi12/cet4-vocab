@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuizStore } from '../stores/quiz'
+import { useLevel } from '../composables/useLevel'
 import QuizSetup from '../components/QuizSetup.vue'
 import MultipleChoice from '../components/MultipleChoice.vue'
 import FillBlank from '../components/FillBlank.vue'
@@ -10,6 +11,7 @@ import SpellingPractice from '../components/SpellingPractice.vue'
 import QuizResult from '../components/QuizResult.vue'
 
 const store = useQuizStore()
+const { level } = useLevel()
 const step = ref('setup')
 const currentIndex = ref(0)
 const answers = ref([])
@@ -25,7 +27,7 @@ async function start(configData) {
   } else {
     apiType = configData.type; apiDir = configData.direction
   }
-  await store.startQuiz(apiType, configData.count, apiDir, configData.source || 'all')
+  await store.startQuiz(apiType, configData.count, apiDir, configData.source || 'all', level.value)
   currentIndex.value = 0
   answers.value = []
   if (configData.type === 'match') {

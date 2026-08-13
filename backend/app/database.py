@@ -28,22 +28,29 @@ class Base(DeclarativeBase):
 
 def ensure_schema():
     """Add missing columns to existing tables (safe to call on every startup)."""
+    migrations = {
+        "quiz_history": [("source", "VARCHAR DEFAULT 'all'")],
+        "words": [
+            ("level", "VARCHAR DEFAULT 'cet4'"),
+            ("phonetic", "VARCHAR"),
+        ],
+    }
     with engine.connect() as conn:
         if DATABASE_URL.startswith("sqlite"):
-            # SQLite: check if column exists via PRAGMA
-            cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(quiz_history)").fetchall()]
-            if "source" not in cols:
-                conn.exec_driver_sql('ALTER TABLE quiz_history ADD COLUMN source VARCHAR DEFAULT "all"')
-                conn.commit()
+            for table, cols in migrations.items():
+                existing = [row[1] for row in conn.exec_driver_sql(f"PRAGMA table_info({table})").fetchall()]
+                for name, ddl in cols:
+                    if name not in existing:
+                        conn.exec_driver_sql(f"ALTER TABLE {table} ADD COLUMN {name} {ddl}")
+            conn.commit()
         else:
-            # PostgreSQL: add column if not exists
-            try:
-                conn.exec_driver_sql(
-                    "ALTER TABLE quiz_history ADD COLUMN IF NOT EXISTS source VARCHAR DEFAULT 'all'"
-                )
-                conn.commit()
-            except Exception:
-                pass
+            for table, cols in migrations.items():
+                for name, ddl in cols:
+                    try:
+                        conn.exec_driver_sql(f"ALTER TABLE {table} ADD COLUMN IF NOT EXISTS {name} {ddl}")
+                    except Exception:
+                        pass
+            conn.commit()
 
 
 def get_db():

@@ -34,6 +34,7 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
         :title="speaking ? '播放中...' : '发音'"
       >&#9654;</button>
       <span class="english">{{ word.english }}</span>
+      <span v-if="word.phonetic" class="phonetic">{{ word.phonetic }}</span>
       <span v-if="showPos && word.part_of_speech" class="pos-badge" :title="word.part_of_speech">
         {{ posLabels[word.part_of_speech.split(' ')[0]] || word.part_of_speech.split(' ')[0] }}
       </span>
@@ -70,6 +71,7 @@ const posLabels = { 'n.': '名词', 'v.': '动词', 'adj.': '形容词', 'adv.':
 .speak-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(99,102,241,0.1); }
 .speak-btn.playing { border-color: var(--primary); color: var(--primary); background: rgba(99,102,241,0.15); }
 .english { font-weight: 600; font-size: 16px; color: var(--primary); }
+.phonetic { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
 .pos-badge {
   font-size: 11px; padding: 1px 6px; border-radius: 8px;
   background: rgba(99,102,241,0.15); color: var(--primary);

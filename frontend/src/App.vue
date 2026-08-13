@@ -19,5 +19,12 @@ import ParticleBackground from './components/ParticleBackground.vue'
 .app-content {
   position: relative;
   z-index: 1;
+  margin-left: 210px;
+}
+@media (max-width: 768px) {
+  .app-content {
+    margin-left: 0;
+    padding-bottom: 64px;
+  }
 }
 </style>

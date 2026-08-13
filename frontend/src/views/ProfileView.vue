@@ -1,12 +1,14 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { getProgressSummary, getQuizHistory, getWeakestWords } from '../api'
 import { useAuthStore } from '../stores/auth'
+import { useLevel } from '../composables/useLevel'
 import StatsOverview from '../components/StatsOverview.vue'
 import HistoryChart from '../components/HistoryChart.vue'
 import WordCard from '../components/WordCard.vue'
 
 const auth = useAuthStore()
+const { level } = useLevel()
 const stats = ref(null)
 const history = ref(null)
 const weakest = ref(null)
@@ -19,12 +21,12 @@ const quizAvg = computed(() => {
   return Math.round(sum / history.value.length)
 })
 
-onMounted(async () => {
+async function load() {
   try {
     const [s, h, w] = await Promise.all([
       getProgressSummary(),
       getQuizHistory(),
-      getWeakestWords(10),
+      getWeakestWords({ limit: 10, level: level.value }),
     ])
     stats.value = s.data
     history.value = h.data
@@ -36,7 +38,11 @@ onMounted(async () => {
   } catch (e) {
     error.value = '加载失败，请刷新重试'
   }
-})
+}
+
+onMounted(load)
+
+watch(level, load)
 </script>
 
 <template>

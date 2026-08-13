@@ -11,4 +11,6 @@ class Word(Base):
     chinese = Column(String, nullable=False)
     part_of_speech = Column(String, nullable=True)
     difficulty_level = Column(Integer, default=1)
+    level = Column(String, default="cet4", index=True)
+    phonetic = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

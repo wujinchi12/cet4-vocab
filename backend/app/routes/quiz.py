@@ -31,7 +31,7 @@ def generate_quiz(
         word_ids = [row[0] for row in wrong_words]
 
     questions = generate_quiz_questions(
-        db, body.quiz_type, body.count, body.direction, current_user.id, word_ids
+        db, body.quiz_type, body.count, body.direction, current_user.id, word_ids, body.level
     )
     result = []
     for q in questions:

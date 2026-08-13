@@ -9,7 +9,7 @@ const showSupport = ref(false)
 
 <template>
   <footer>
-    <p>CET-4 词汇学习 &copy; 2026 吴瑾赤</p>
+    <p>CET 词汇学习 &copy; 2026 吴瑾赤</p>
     <div class="footer-actions">
       <button class="footer-btn" @click="showFeedback = true">提建议</button>
       <button class="footer-btn" @click="showSupport = true">支持作者</button>

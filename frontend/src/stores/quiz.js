@@ -11,11 +11,11 @@ export const useQuizStore = defineStore('quiz', {
     inProgress: false,
   }),
   actions: {
-    async startQuiz(type, count, direction, source = 'all') {
+    async startQuiz(type, count, direction, source = 'all', level = null) {
       this.quizType = type
       this.direction = direction
       this.source = source
-      const { data } = await generateQuiz({ quiz_type: type, count, direction, source })
+      const { data } = await generateQuiz({ quiz_type: type, count, direction, source, level })
       this.questions = data
       this.results = null
       this.inProgress = true

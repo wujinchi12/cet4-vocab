@@ -6,6 +6,7 @@ class QuizGenerateRequest(BaseModel):
     count: int = 10
     direction: str = "en_to_cn"
     source: str = "all"  # "all" or "wrong"
+    level: str | None = None
 
 
 class QuizAnswer(BaseModel):

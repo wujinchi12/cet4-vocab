@@ -11,7 +11,7 @@ defineProps({ visible: Boolean })
         <div class="heart-icon">&#10084;</div>
         <h2>支持作者</h2>
         <p class="message">
-          感谢你使用 <strong>CET-4 词汇学习</strong>！<br />
+          感谢你使用 <strong>CET 词汇学习</strong>！<br />
           如果这个工具对你的学习有帮助，<br />
           欢迎支持作者 <strong>吴瑾赤</strong> 继续创作。
         </p>
