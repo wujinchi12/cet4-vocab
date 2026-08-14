@@ -50,6 +50,21 @@ watch(level, load)
     <h2>我的学习进度</h2>
     <p class="username" v-if="auth.user?.username">用户: {{ auth.user.username }}</p>
 
+    <div class="quick-links">
+      <router-link to="/wrong-answers" class="quick-link card">
+        <span class="quick-title">错题本</span>
+        <span class="quick-desc">复习答错的题目</span>
+      </router-link>
+      <router-link to="/favorites" class="quick-link card">
+        <span class="quick-title">收藏库</span>
+        <span class="quick-desc">已收藏的单词</span>
+      </router-link>
+      <router-link to="/leaderboard" class="quick-link card">
+        <span class="quick-title">排行榜</span>
+        <span class="quick-desc">查看学习排行</span>
+      </router-link>
+    </div>
+
     <div v-if="error" class="error-msg">{{ error }}</div>
 
     <template v-else>
@@ -75,6 +90,19 @@ watch(level, load)
 .profile-page { max-width: 700px; margin: 0 auto; }
 h2 { margin-bottom: 4px; }
 .username { color: var(--text-secondary); font-size: 14px; margin-bottom: 8px; }
+.quick-links {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin: 12px 0 20px;
+}
+.quick-link {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 16px; text-decoration: none; color: var(--text);
+  transition: border-color 0.15s, background 0.15s;
+}
+.quick-link:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.08); }
+.quick-link:nth-child(3) { grid-column: 1 / -1; }
+.quick-title { font-size: 15px; font-weight: 600; }
+.quick-desc { font-size: 12px; color: var(--text-secondary); }
 .error-msg { color: var(--danger); padding: 20px; text-align: center; }
 .weakest-section { margin-top: 20px; padding: 0; overflow: hidden; }
 .weakest-section h3 { padding: 16px 20px 8px; }

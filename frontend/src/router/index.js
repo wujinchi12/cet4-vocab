@@ -11,6 +11,7 @@ const routes = [
   { path: '/wrong-answers', name: 'wrong-answers', component: () => import('../views/WrongAnswerBookView.vue'), meta: { requiresAuth: true } },
   { path: '/favorites', name: 'favorites', component: () => import('../views/FavoritesView.vue'), meta: { requiresAuth: true } },
   { path: '/exam', name: 'exam', component: () => import('../views/ExamView.vue'), meta: { requiresAuth: true } },
+  { path: '/real-exams', name: 'real-exams', component: () => import('../views/RealExamView.vue'), meta: { requiresAuth: true } },
   { path: '/leaderboard', name: 'leaderboard', component: () => import('../views/LeaderboardView.vue'), meta: { requiresAuth: true } },
   { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue') },
 ]

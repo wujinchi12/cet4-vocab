@@ -18,7 +18,8 @@ const desktopItems = [
   { to: '/quiz', label: '测验' },
   { to: '/wrong-answers', label: '错题本' },
   { to: '/favorites', label: '收藏库' },
-  { to: '/exam', label: '真题' },
+  { to: '/real-exams', label: '真题库' },
+  { to: '/exam', label: '模拟测试' },
   { to: '/leaderboard', label: '排行榜' },
   { to: '/profile', label: '我的' },
 ]
@@ -27,7 +28,8 @@ const mobileItems = [
   { to: '/words', label: '词汇' },
   { to: '/flashcard', label: '闪卡' },
   { to: '/quiz', label: '测验' },
-  { to: '/exam', label: '真题' },
+  { to: '/real-exams', label: '真题库' },
+  { to: '/exam', label: '模拟' },
   { to: '/profile', label: '我的' },
 ]
 </script>

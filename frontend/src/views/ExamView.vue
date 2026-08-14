@@ -154,11 +154,11 @@ onBeforeUnmount(() => stopTimer())
 
 <template>
   <div class="exam-view">
-    <h2>真题测试</h2>
+    <h2>模拟测试</h2>
 
     <!-- Step 1: Paper Selection -->
     <div v-if="step === 'select'">
-      <p class="subtitle">选择一套真题试卷开始模拟测试</p>
+      <p class="subtitle">选择一套模拟试卷开始在线测试</p>
 
       <div v-if="history.length > 0" class="history-card">
         <h4>最近记录</h4>
